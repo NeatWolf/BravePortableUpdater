@@ -91,13 +91,6 @@ finally {
 }
 ```
 
-## GitHub Actions
-
-The `Verify` workflow runs the script-boundary check, checksum manifest check,
-PowerShell parse check, and PSScriptAnalyzer on Windows for pushes to `main`
-and pull requests. It does not run the live portable dry run because that check
-requires a local user-controlled Brave Portable folder.
-
 ## Live Portable Dry Run
 
 Use the no-log dry run for live evidence unless an actual update is required:

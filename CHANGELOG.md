@@ -4,11 +4,11 @@ All notable user-facing changes for this repository are recorded here.
 
 ## v0.1.31 - 2026-07-08
 
-Maintenance-evidence release.
+Release-packaging release.
 
-- Added a Windows GitHub Actions verification workflow for script-boundary,
-  checksum manifest, PowerShell parser, and PSScriptAnalyzer checks.
-- Documented that live portable dry-run evidence remains local-only.
+- Made the README release asset list match the published GitHub release assets:
+  the zip bundle, the two updater files, and `SHA256SUMS.txt`.
+- Clarified that the zip contains only the updater files and checksum manifest.
 - Kept updater behavior and release assets unchanged.
 
 ## v0.1.30 - 2026-07-08

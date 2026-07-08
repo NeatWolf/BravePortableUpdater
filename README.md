@@ -199,15 +199,17 @@ update-backups/
 ## Releases
 
 Releases are tagged from `main` and use [CHANGELOG.md](CHANGELOG.md) as the
-source of release notes. The repository is public so Windows users can download
-the two updater files directly from the latest GitHub release:
+source of release notes. Each release publishes exactly these downloadable
+project assets:
 
+- `BravePortableUpdater.zip`
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`
+- `SHA256SUMS.txt`
 
-Each release also carries `SHA256SUMS.txt`, a small text file with SHA256 hashes
-for those two updater files. This repository does not publish Brave or Portapps
-binaries.
+`BravePortableUpdater.zip` is the beginner-friendly bundle. It contains only
+the two updater files plus `SHA256SUMS.txt`. This repository does not publish
+Brave or Portapps binaries.
 
 ## Maintainer Verification
 
