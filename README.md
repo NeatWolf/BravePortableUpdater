@@ -6,6 +6,7 @@
 ![No admin](https://img.shields.io/badge/admin-not%20required-2EA043)
 ![No AI training](https://img.shields.io/badge/AI%20training-not%20licensed-B00020)
 ![License](https://img.shields.io/badge/license-attribution%20%2B%20no%20AI%20training-6F42C1)
+[![Verify](https://github.com/NeatWolf/BravePortableUpdater/actions/workflows/verify.yml/badge.svg)](https://github.com/NeatWolf/BravePortableUpdater/actions/workflows/verify.yml)
 
 A small, cautious Windows updater for a Portapps-style Brave Portable folder.
 
@@ -179,6 +180,11 @@ for those two updater files. This repository does not publish Brave or Portapps
 binaries.
 
 ## Maintainer Verification
+
+GitHub Actions runs the repository-only checks on Windows for pushes and pull
+requests: script boundary, checksum manifest, PowerShell parse, and
+PSScriptAnalyzer. The live portable dry-run remains a local maintainer check
+because CI must not access a user's portable Brave folder.
 
 Before tagging a release, run the same checks from a clean working tree:
 

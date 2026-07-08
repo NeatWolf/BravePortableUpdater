@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.19 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Added a Windows GitHub Actions verification workflow for script-boundary,
+  checksum-manifest, PowerShell parser, and PSScriptAnalyzer checks.
+- Added a README status badge for the verification workflow.
+- Documented why live portable dry-run verification remains a local maintainer
+  check.
+
 ## v0.1.18 - 2026-07-08
 
 Release-packaging release.
