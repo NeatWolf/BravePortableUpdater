@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.20 - 2026-07-08
+
+Repository-discoverability release.
+
+- Added direct latest-release download links for `Update-BravePortable.cmd` and
+  `Update-BravePortable.ps1` in the Quick Start.
+- Linked `SHA256SUMS.txt` from the same first-run path for users who verify
+  downloads.
+
 ## v0.1.19 - 2026-07-08
 
 Maintenance-evidence release.

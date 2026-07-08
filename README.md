@@ -22,13 +22,15 @@ Brave's own GitHub release zips.
 
 ## Quick Start
 
-From the latest GitHub release, download exactly these two updater files:
+Download exactly these two updater files:
 
-- `Update-BravePortable.cmd`
-- `Update-BravePortable.ps1`
+- [`Update-BravePortable.cmd`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.cmd)
+- [`Update-BravePortable.ps1`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.ps1)
 
-The release also includes `SHA256SUMS.txt` so users who know how to verify
-downloads can check that the two updater files arrived unchanged.
+They come from the latest GitHub release. The release also includes
+[`SHA256SUMS.txt`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/SHA256SUMS.txt)
+so users who know how to verify downloads can check that the two updater files
+arrived unchanged.
 
 Put both files in the same folder as `brave-portable.exe`. A typical folder
 looks like this before you run the updater:
