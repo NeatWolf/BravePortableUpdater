@@ -117,8 +117,12 @@ function Wait-ForPortableBraveExit {
     }
 
     if (-not $WaitForExit) {
-        $summary = ($running | ForEach-Object { '{0}({1})' -f $_.Name, $_.ProcessId }) -join ', '
-        throw "Portable Brave is running from this directory: $summary. Close it first, or rerun with -WaitForExit."
+        $shown = @($running | Select-Object -First 8)
+        $summary = ($shown | ForEach-Object { '{0}({1})' -f $_.Name, $_.ProcessId }) -join ', '
+        if ($running.Count -gt $shown.Count) {
+            $summary = "$summary, ... and $($running.Count - $shown.Count) more"
+        }
+        throw "Portable Brave is running from this directory ($($running.Count) processes: $summary). Close it first, or rerun with -WaitForExit."
     }
 
     Write-Log 'Portable Brave is running; waiting for it to exit...'
@@ -344,6 +348,14 @@ try {
     }
 }
 catch {
-    Write-Error $_.Exception.Message
+    $message = $_.Exception.Message
+    Write-Host ''
+    Write-Host "ERROR: $message" -ForegroundColor Red
+    try {
+        Add-Content -LiteralPath $LogPath -Value ('[{0}] ERROR: {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message) -Encoding UTF8
+    }
+    catch {
+        # Best-effort logging only; preserve the original failure as the process result.
+    }
     exit 1
 }

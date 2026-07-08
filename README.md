@@ -34,6 +34,8 @@ Update-BravePortable.cmd
 ```
 
 The default channel is stable.
+Double-clicking `Update-BravePortable.cmd` from Explorer is supported. If the
+update fails, the window stays open so the error can be read.
 
 ## Examples
 
