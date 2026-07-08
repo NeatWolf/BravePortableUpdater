@@ -30,8 +30,9 @@ Useful references:
 Each cycle should choose one polish field that is different from the most recent
 cycle, make a narrow pass, verify it, then commit and push.
 
-Use the category scores as the quality gate. The target is at least 9/10 in
-every listed polish category, with no major interrupting issue.
+Use the category scores as the quality gate. The standing target is at least
+9/10 in every listed polish category, with no major interrupting issue. If an
+active user goal asks for a stricter score, follow that goal for completion.
 
 Current cycle history:
 
@@ -41,6 +42,7 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - add contribution and security guidance without adding executable scripts.
 - 2026-07-08: Code quality - run PSScriptAnalyzer and fix all analyzer findings in the updater script.
 - 2026-07-08: Repository discoverability - add code of conduct, issue template, and PR template.
+- 2026-07-08: Maintenance evidence - documented repeatable verification commands and live dry-run expectations.
 
 ## Working Rules
 

@@ -139,6 +139,24 @@ them from the repo:
 
 This repository does not publish Brave or Portapps binaries.
 
+## Maintainer Verification
+
+Before tagging a release, run the same checks from a clean working tree:
+
+```powershell
+git status --short --branch
+git ls-files -- '*.cmd' '*.ps1'
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; Write-Output ''PowerShell parse OK'''
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { Write-Output 'PSScriptAnalyzer passed with no findings.' }"
+cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun"
+```
+
+The dry run must report what would happen without changing files. If the live
+portable copy of Brave is running, process detection is a valid safety result:
+close Brave or rerun with `-WaitForExit` only when an actual update is intended.
+The only release assets are `Update-BravePortable.cmd` and
+`Update-BravePortable.ps1`.
+
 ## Contributing And Security
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for scope, safety rules, and verification

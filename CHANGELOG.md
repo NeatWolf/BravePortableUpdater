@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.3 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Documented the repeatable maintainer verification commands in the README.
+- Recorded how live dry-run evidence should treat Brave-running detection.
+- Kept the release package limited to the two updater files.
+
 ## v0.1.2 - 2026-07-08
 
 Community-profile release.
