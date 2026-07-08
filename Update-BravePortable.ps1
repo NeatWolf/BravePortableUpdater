@@ -55,6 +55,12 @@ Checks the target portable folder and reports whether the stable channel would
 update without changing the app payload or profile files.
 
 .EXAMPLE
+.\Update-BravePortable.ps1 -DryRun -Force -NoLog
+
+Runs a screen-only verification pass that exercises the dry-run action output
+even when Brave is already current, without appending the updater log.
+
+.EXAMPLE
 .\Update-BravePortable.ps1 -Edition beta
 
 Updates the portable app payload to the latest public beta channel build.

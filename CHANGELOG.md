@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.11 - 2026-07-08
+
+PowerShell-help release.
+
+- Added a script help example for `-DryRun -Force -NoLog`, the screen-only
+  verification path for already-current installs.
+- Kept behavior unchanged and release packaging limited to the two updater
+  files.
+
 ## v0.1.10 - 2026-07-08
 
 Maintenance-evidence release.
