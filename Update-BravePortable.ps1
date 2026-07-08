@@ -168,6 +168,20 @@ function Write-Log {
     }
 }
 
+function Write-DryRunNoChangeMessage {
+    param(
+        [Parameter(Mandatory = $true)][string]$NoLogItems,
+        [Parameter(Mandatory = $true)][string]$LoggedItems
+    )
+
+    if ($NoLog) {
+        Write-Log "Dry run only. No $NoLogItems, or updater log were changed."
+        return
+    }
+
+    Write-Log "Dry run only. No $LoggedItems were changed; only the updater log may have been appended."
+}
+
 function Assert-PortappsBraveRoot {
     if (-not (Test-Path -LiteralPath $PortableExe -PathType Leaf)) {
         throw "This does not look like a Portapps Brave root. Missing: $PortableExe"
@@ -593,12 +607,9 @@ function Restore-AppPayloadBackup {
     Write-Log "Selected app payload backup: $BackupApp (Brave $($backupVersion.Normalized))"
 
     if ($DryRun) {
-        if ($NoLog) {
-            Write-Log 'Dry run only. No app payload, backup folders, profile files, or updater log were changed.'
-        }
-        else {
-            Write-Log 'Dry run only. No app payload, backup folders, or profile files were changed; only the updater log may have been appended.'
-        }
+        Write-DryRunNoChangeMessage `
+            -NoLogItems 'app payload, backup folders, profile files' `
+            -LoggedItems 'app payload, backup folders, or profile files'
         Write-Log "Would move current app payload to: $currentBackup"
         Write-Log "Would restore backup into: $AppDir"
         Write-Log "Would leave profile data untouched: $DataDir"
@@ -670,12 +681,9 @@ try {
     }
 
     if ($DryRun) {
-        if ($NoLog) {
-            Write-Log 'Dry run only. No app payload, profile files, or updater log were changed.'
-        }
-        else {
-            Write-Log 'Dry run only. No app payload or profile files were changed; only the updater log may have been appended.'
-        }
+        Write-DryRunNoChangeMessage `
+            -NoLogItems 'app payload, profile files' `
+            -LoggedItems 'app payload or profile files'
         if ($release.Sha256Url) {
             Write-Log "Would download: $($release.AssetUrl)"
             Write-Log "Would verify SHA256: $($release.Sha256Url)"

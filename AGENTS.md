@@ -67,6 +67,7 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - made the README first-run path a short beginner checklist.
 - 2026-07-08: PowerShell help - filled full help inputs, outputs, and related links.
 - 2026-07-08: Maintenance evidence - aligned the PR template with the self-contained analyzer checklist.
+- 2026-07-08: Code quality - centralized dry-run unchanged-status messages.
 
 ## Working Rules
 

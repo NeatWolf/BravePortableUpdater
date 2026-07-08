@@ -2,6 +2,13 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.29 - 2026-07-08
+
+Code-quality release.
+
+- Centralized dry-run unchanged-status messages in the updater script.
+- Kept dry-run output text and updater behavior unchanged.
+
 ## v0.1.28 - 2026-07-08
 
 Maintenance-evidence release.
