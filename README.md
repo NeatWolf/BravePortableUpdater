@@ -35,8 +35,8 @@ Update-BravePortable.cmd
 
 The default channel is stable.
 Double-clicking `Update-BravePortable.cmd` from Explorer is supported. If the
-update does not complete, the window stays open with the error and the next
-step to try.
+update finishes or does not complete, the window stays open so the result can
+be read.
 
 ## Examples
 
@@ -63,6 +63,12 @@ Force reinstall of the current resolved version:
 
 ```bat
 Update-BravePortable.cmd -Force
+```
+
+Run without the final pause, for scheduled tasks or automation:
+
+```bat
+Update-BravePortable.cmd -NoPause
 ```
 
 Run from another folder:
@@ -106,6 +112,9 @@ Logs are appended to:
 ```text
 brave-portable-update.log
 ```
+
+The `.cmd` launcher prints the full log path before it pauses, so Explorer
+launches still leave both an on-screen result and a persistent log.
 
 Previous app payloads are stored in:
 

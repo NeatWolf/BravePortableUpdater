@@ -8,7 +8,8 @@ param(
     [switch]$Force,
     [switch]$Launch,
     [switch]$DryRun,
-    [switch]$WaitForExit
+    [switch]$WaitForExit,
+    [switch]$NoPause
 )
 
 Set-StrictMode -Version 2.0
