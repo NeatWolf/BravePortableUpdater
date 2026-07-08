@@ -34,6 +34,7 @@ Current cycle history:
 
 - 2026-07-08: Operator usability - kept Explorer-launched status visible, added actionable error copy, printed log path.
 - 2026-07-08: PowerShell help and operator discoverability - add script help and `.cmd` help routing.
+- 2026-07-08: Release packaging - add changelog and release guidance, then tag the first GitHub release.
 
 ## Working Rules
 
@@ -46,4 +47,6 @@ Current cycle history:
   the live command.
 - Keep the GitHub repo and the live portable copy aligned for user-facing script
   changes.
+- Do not add executable scripts beyond `Update-BravePortable.cmd` and
+  `Update-BravePortable.ps1`.
 - Commit and push completed polish passes.

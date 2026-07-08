@@ -128,6 +128,17 @@ Previous app payloads are stored in:
 update-backups/
 ```
 
+## Releases
+
+Releases are tagged from `main` and use [CHANGELOG.md](CHANGELOG.md) as the
+source of release notes. Download the two updater files from a release or copy
+them from the repo:
+
+- `Update-BravePortable.cmd`
+- `Update-BravePortable.ps1`
+
+This repository does not publish Brave or Portapps binaries.
+
 ## Recovery
 
 If a new Brave payload misbehaves, close Brave, rename the current `app/`
