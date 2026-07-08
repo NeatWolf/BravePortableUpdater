@@ -78,6 +78,10 @@ Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 
+if ($NoPause) {
+    Write-Verbose 'NoPause is handled by Update-BravePortable.cmd; this PowerShell script never pauses.'
+}
+
 if ([string]::IsNullOrWhiteSpace($PortableDir)) {
     $PortableDir = $PSScriptRoot
 }
@@ -109,7 +113,7 @@ function Write-Log {
     param([Parameter(Mandatory = $true)][string]$Message)
 
     $line = '[{0}] {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Message
-    Write-Host $Message
+    Write-Information $Message -InformationAction Continue
     Add-Content -LiteralPath $LogPath -Value $line -Encoding UTF8
 }
 
@@ -125,7 +129,7 @@ function Assert-PortappsBraveRoot {
     }
 }
 
-function Normalize-BraveVersion {
+function ConvertTo-BraveVersion {
     param([string]$Version)
 
     if ([string]::IsNullOrWhiteSpace($Version)) {
@@ -157,11 +161,11 @@ function Get-InstalledBraveVersion {
     $raw = (Get-Item -LiteralPath $braveExe).VersionInfo.FileVersion
     return [pscustomobject]@{
         Raw = $raw
-        Normalized = Normalize-BraveVersion $raw
+        Normalized = ConvertTo-BraveVersion $raw
     }
 }
 
-function Get-PortableBraveProcesses {
+function Get-PortableBraveProcess {
     $root = $PortableDir.TrimEnd('\') + '\'
     $names = @('brave.exe', 'brave-portable.exe', 'chrome_proxy.exe')
     $filter = ($names | ForEach-Object { "Name='$_'" }) -join ' OR '
@@ -174,12 +178,14 @@ function Get-PortableBraveProcesses {
 }
 
 function Wait-ForPortableBraveExit {
-    $running = @(Get-PortableBraveProcesses)
+    param([switch]$Wait)
+
+    $running = @(Get-PortableBraveProcess)
     if ($running.Count -eq 0) {
         return
     }
 
-    if (-not $WaitForExit) {
+    if (-not $Wait) {
         $shown = @($running | Select-Object -First 8)
         $summary = ($shown | ForEach-Object { '{0}({1})' -f $_.Name, $_.ProcessId }) -join ', '
         if ($running.Count -gt $shown.Count) {
@@ -196,7 +202,7 @@ Or run Update-BravePortable.cmd -WaitForExit to leave this updater waiting until
     }
 
     Write-Log 'Portable Brave is running; waiting for it to exit...'
-    while (@(Get-PortableBraveProcesses).Count -gt 0) {
+    while (@(Get-PortableBraveProcess).Count -gt 0) {
         Start-Sleep -Seconds 2
     }
 }
@@ -248,7 +254,7 @@ function Resolve-BraveRelease {
     }
 }
 
-function Download-ReleaseAsset {
+function Save-ReleaseAsset {
     param(
         [Parameter(Mandatory = $true)]$Release,
         [Parameter(Mandatory = $true)][string]$DownloadDir
@@ -316,7 +322,7 @@ function Expand-BraveZip {
     }
 
     $fileVersion = (Get-Item -LiteralPath $newBraveExe).VersionInfo.FileVersion
-    $normalized = Normalize-BraveVersion $fileVersion
+    $normalized = ConvertTo-BraveVersion $fileVersion
     if ($normalized -ne $ExpectedVersion) {
         throw "Staged brave.exe version '$fileVersion' normalized to '$normalized', expected '$ExpectedVersion'."
     }
@@ -324,7 +330,7 @@ function Expand-BraveZip {
     Write-Log "Verified staged brave.exe version $fileVersion."
 }
 
-function Swap-AppPayload {
+function Install-AppPayload {
     param(
         [Parameter(Mandatory = $true)][string]$NewAppDir,
         [Parameter(Mandatory = $true)][string]$CurrentVersion,
@@ -357,13 +363,18 @@ function Swap-AppPayload {
 }
 
 function Start-BravePortable {
-    Write-Log 'Launching brave-portable.exe...'
-    Start-Process -FilePath $PortableExe -WorkingDirectory $PortableDir
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param()
+
+    if ($PSCmdlet.ShouldProcess($PortableExe, 'Launch Brave Portable')) {
+        Write-Log 'Launching brave-portable.exe...'
+        Start-Process -FilePath $PortableExe -WorkingDirectory $PortableDir
+    }
 }
 
 try {
     Assert-PortappsBraveRoot
-    Wait-ForPortableBraveExit
+    Wait-ForPortableBraveExit -Wait:$WaitForExit
 
     $installed = Get-InstalledBraveVersion
     if ($installed.Raw) {
@@ -398,9 +409,9 @@ try {
     $newAppDir = Join-Path $tempRoot 'new-app'
 
     try {
-        $zipPath = Download-ReleaseAsset -Release $release -DownloadDir $downloadDir
+        $zipPath = Save-ReleaseAsset -Release $release -DownloadDir $downloadDir
         Expand-BraveZip -ZipPath $zipPath -ExtractDir $extractDir -NewAppDir $newAppDir -ExpectedVersion $release.Version
-        $backupApp = Swap-AppPayload -NewAppDir $newAppDir -CurrentVersion $installed.Normalized -TargetVersion $release.Version
+        $backupApp = Install-AppPayload -NewAppDir $newAppDir -CurrentVersion $installed.Normalized -TargetVersion $release.Version
 
         $updated = Get-InstalledBraveVersion
         Write-Log "Update complete. Installed brave.exe version: $($updated.Raw) (Brave $($updated.Normalized))"
@@ -419,14 +430,15 @@ try {
 }
 catch {
     $message = $_.Exception.Message
-    Write-Host ''
-    Write-Host 'ERROR:' -ForegroundColor Red
-    Write-Host $message -ForegroundColor Red
+    Write-Information '' -InformationAction Continue
+    Write-Information 'ERROR:' -InformationAction Continue
+    Write-Information $message -InformationAction Continue
     try {
         Add-Content -LiteralPath $LogPath -Value ('[{0}] ERROR: {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message) -Encoding UTF8
     }
     catch {
         # Best-effort logging only; preserve the original failure as the process result.
+        Write-Verbose "Failed to append error to log: $($_.Exception.Message)"
     }
     exit 1
 }

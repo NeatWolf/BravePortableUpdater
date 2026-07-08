@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.1 - 2026-07-08
+
+Code-quality release.
+
+- Fixed all current PSScriptAnalyzer findings in `Update-BravePortable.ps1`.
+- Preserved dry-run and Explorer-friendly launcher behavior.
+- Kept the release package limited to the two updater files.
+
 ## v0.1.0 - 2026-07-08
 
 Initial packaged release.
