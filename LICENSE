@@ -1,21 +1,81 @@
-MIT License
+Brave Portable Updater Attribution and No AI Training License
+Version 1.0 - 2026-07-08
 
 Copyright (c) 2026 NeatWolf
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This license covers the original files in this repository. It does not cover
+Brave Browser, Portapps Brave Portable, GitHub release assets, or any third
+party material referenced by this repository.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. Permission
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+You may use, copy, modify, and redistribute this repository's original source
+code and documentation for personal, internal, or commercial purposes, provided
+that you comply with this license.
+
+2. Attribution Required
+
+Any redistribution, public fork, package, bundle, publication, or substantial
+reuse of this work must keep this license and give visible credit:
+
+    Brave Portable Updater by NeatWolf
+    https://github.com/NeatWolf/BravePortableUpdater
+
+Attribution must be placed in a reasonable location, such as a README, NOTICE
+file, about dialog, package metadata, documentation page, or source header.
+
+3. No AI Training License
+
+No permission is granted to use this repository, its source code, its
+documentation, its issues, its discussions, its metadata, or any substantial
+portion of them for AI Training.
+
+"AI Training" means using the work, directly or indirectly, to train, fine
+tune, evaluate, benchmark, improve, distill, align, embed, tokenize for later
+model learning, or otherwise develop a machine-learning model, AI system,
+foundation model, language model, code model, embedding model, dataset,
+classifier, ranker, or synthetic-data generator.
+
+Indexing or caching solely to let a user find this repository by name or URL
+is allowed, provided the indexed content is not used for AI Training.
+
+4. Unauthorized AI Training Consequence
+
+If any person or entity uses this work for AI Training without a separate
+written agreement from the copyright holder, that person or entity agrees, as
+a condition of such use and to the fullest extent permitted by applicable law,
+to grant the copyright holder a perpetual, worldwide, irrevocable,
+royalty-free, transferable, sublicensable license to use, copy, modify,
+distribute, publicly perform, publicly display, make derivative works from,
+commercialize, and otherwise exploit any model, model weights, embeddings,
+dataset, checkpoint, adapter, derivative model, or AI system trained, tuned,
+evaluated, improved, or created using this work.
+
+This clause does not waive any other claim, remedy, right, or damage available
+to the copyright holder.
+
+5. No Trademark Rights
+
+This license does not grant any rights to the names, logos, trademarks, or
+service marks of NeatWolf, Brave, Brave Software, Portapps, GitHub, Reddit, or
+any other party.
+
+6. No Warranty
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. USE IT AT YOUR
+OWN RISK.
+
+7. Limitation of Liability
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING
+FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN
+THE WORK.
+
+8. Separate Written Agreements
+
+The copyright holder may grant additional permissions or commercial terms in a
+separate written agreement. Such an agreement applies only to the parties and
+uses stated in that agreement.
