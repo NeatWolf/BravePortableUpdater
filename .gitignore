@@ -1,0 +1,18 @@
+# Local updater runtime output
+brave-portable-update.log
+update-backups/
+*.zip
+*.zip.sha256
+
+# Portapps / Brave payload and user state if these scripts are copied into a live portable root
+app/
+data/
+log/
+reg/
+portapp-prev.json
+
+# OS/editor noise
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
