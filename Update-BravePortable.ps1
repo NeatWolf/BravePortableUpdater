@@ -122,7 +122,14 @@ function Wait-ForPortableBraveExit {
         if ($running.Count -gt $shown.Count) {
             $summary = "$summary, ... and $($running.Count - $shown.Count) more"
         }
-        throw "Portable Brave is running from this directory ($($running.Count) processes: $summary). Close it first, or rerun with -WaitForExit."
+        throw @"
+Portable Brave is still running from this folder.
+
+Detected $($running.Count) related processes: $summary
+
+Close every Brave Portable window, wait a few seconds, then run Update-BravePortable.cmd again.
+Or run Update-BravePortable.cmd -WaitForExit to leave this updater waiting until Brave closes.
+"@
     }
 
     Write-Log 'Portable Brave is running; waiting for it to exit...'
@@ -350,7 +357,8 @@ try {
 catch {
     $message = $_.Exception.Message
     Write-Host ''
-    Write-Host "ERROR: $message" -ForegroundColor Red
+    Write-Host 'ERROR:' -ForegroundColor Red
+    Write-Host $message -ForegroundColor Red
     try {
         Add-Content -LiteralPath $LogPath -Value ('[{0}] ERROR: {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message) -Encoding UTF8
     }

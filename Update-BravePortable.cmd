@@ -6,7 +6,8 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0Update-Bra
 set "EXIT_CODE=%ERRORLEVEL%"
 if not "%EXIT_CODE%"=="0" (
     echo.
-    echo Brave Portable update failed. See the message above.
+    echo Update did not complete.
+    echo This window is staying open so you can read the details above.
     echo.
     pause
 )
