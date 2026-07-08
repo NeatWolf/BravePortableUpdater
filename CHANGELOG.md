@@ -6,11 +6,11 @@ All notable user-facing changes for this repository are recorded here.
 
 Maintenance-evidence release.
 
-- Added a Windows GitHub Actions verification workflow for script-boundary,
-  checksum-manifest, PowerShell parser, and PSScriptAnalyzer checks.
-- Added a README status badge for the verification workflow.
-- Documented why live portable dry-run verification remains a local maintainer
-  check.
+- Added `VERIFICATION.md` with local repository checks, live dry-run evidence,
+  restore-preview evidence, and release-asset boundaries.
+- Linked pull requests and maintainer docs to the shared verification checklist.
+- Kept verification local-first because the live portable check must run against
+  a real user-controlled Brave Portable folder.
 
 ## v0.1.18 - 2026-07-08
 

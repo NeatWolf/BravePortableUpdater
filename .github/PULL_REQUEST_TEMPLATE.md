@@ -16,7 +16,8 @@ Choose the closest category:
 
 ## Verification
 
-Paste the commands that match the change:
+Paste the commands that match the change. See `VERIFICATION.md` for the full
+checklist and expected evidence.
 
 ```powershell
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; "PowerShell parse OK"'
