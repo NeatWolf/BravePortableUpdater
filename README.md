@@ -139,6 +139,11 @@ them from the repo:
 
 This repository does not publish Brave or Portapps binaries.
 
+## Contributing And Security
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for scope, safety rules, and verification
+expectations. Report security-sensitive issues using [SECURITY.md](SECURITY.md).
+
 ## Recovery
 
 If a new Brave payload misbehaves, close Brave, rename the current `app/`

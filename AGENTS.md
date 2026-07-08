@@ -30,11 +30,15 @@ Useful references:
 Each cycle should choose one polish field that is different from the most recent
 cycle, make a narrow pass, verify it, then commit and push.
 
+Use the category scores as the quality gate. The target is at least 7/10 in
+every listed polish category, with no major interrupting issue.
+
 Current cycle history:
 
 - 2026-07-08: Operator usability - kept Explorer-launched status visible, added actionable error copy, printed log path.
 - 2026-07-08: PowerShell help and operator discoverability - add script help and `.cmd` help routing.
 - 2026-07-08: Release packaging - add changelog and release guidance, then tag the first GitHub release.
+- 2026-07-08: Repository discoverability - add contribution and security guidance without adding executable scripts.
 
 ## Working Rules
 
