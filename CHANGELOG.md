@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.32 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Added post-release verification commands for clean branch state, tag target,
+  GitHub release target, and asset list.
+- Kept updater behavior and release assets unchanged.
+
 ## v0.1.31 - 2026-07-08
 
 Release-packaging release.

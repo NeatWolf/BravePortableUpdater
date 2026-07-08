@@ -149,3 +149,25 @@ The zip must contain exactly:
 
 Do not attach Brave binaries, Portapps binaries, logs, backups, or profile
 folders.
+
+## Post-Release Checks
+
+After publishing a release, verify the pushed commit, local tag, GitHub release
+target, and asset list:
+
+```powershell
+git status --short --branch
+git rev-parse HEAD
+git rev-list -n 1 v0.1.31
+git tag --points-at HEAD
+gh release view v0.1.31 --json url,tagName,targetCommitish,assets --jq '{url:.url, tagName:.tagName, target:.targetCommitish, assets:[.assets[].name]}'
+gh release list --limit 3
+```
+
+Replace `v0.1.31` with the release being checked. Expected evidence:
+
+- working tree is clean and `main` is aligned with `origin/main`
+- the tag points at the pushed `HEAD`
+- the GitHub release target matches the pushed commit
+- release assets are exactly `BravePortableUpdater.zip`, `Update-BravePortable.cmd`,
+  `Update-BravePortable.ps1`, and `SHA256SUMS.txt`

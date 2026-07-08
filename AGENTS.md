@@ -70,6 +70,7 @@ Current cycle history:
 - 2026-07-08: Code quality - centralized dry-run unchanged-status messages.
 - 2026-07-08: Operator usability - surfaced downloaded-file warning recovery in beginner help.
 - 2026-07-08: Release packaging - made the README release asset list match the published zip, scripts, and checksum manifest.
+- 2026-07-08: Maintenance evidence - documented post-release remote/tag/asset verification checks.
 
 ## Working Rules
 
