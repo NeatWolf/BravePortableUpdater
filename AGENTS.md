@@ -69,6 +69,7 @@ Current cycle history:
 - 2026-07-08: Maintenance evidence - aligned the PR template with the self-contained analyzer checklist.
 - 2026-07-08: Code quality - centralized dry-run unchanged-status messages.
 - 2026-07-08: Operator usability - surfaced downloaded-file warning recovery in beginner help.
+- 2026-07-08: Maintenance evidence - added a Windows verification workflow for parser, checksum, script-boundary, and analyzer checks.
 
 ## Working Rules
 
