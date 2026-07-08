@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.9 - 2026-07-08
+
+Repository-discoverability release.
+
+- Updated `SECURITY.md` for the now-public repository.
+- Added a concrete private-reporting path using GitHub private vulnerability
+  reporting when available, with public issues limited to non-sensitive defects.
+- Updated the security boundary to match the hash-required default.
+
 ## v0.1.8 - 2026-07-08
 
 Maintenance-evidence release.

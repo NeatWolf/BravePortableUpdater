@@ -6,14 +6,18 @@ Only the latest `main` branch and the latest GitHub release are supported.
 
 ## Reporting A Vulnerability
 
-This is a small private utility repo. Report security issues privately to the
-repository owner instead of opening a public issue when the issue could expose:
+This is a small public utility repo. Report security issues through GitHub's
+private vulnerability reporting when available, or contact the repository owner
+privately before opening a public issue when the issue could expose:
 
 - profile data loss risks
 - unsafe update or rollback behavior
 - command execution risks
 - incorrect download or hash verification
 - accidental packaging of Brave, Portapps, profile data, logs, or backups
+
+Use a public GitHub issue only for non-sensitive defects that do not expose
+private data or a practical exploit path.
 
 Include:
 
@@ -31,7 +35,7 @@ or other private files in a report.
 The updater is intended to:
 
 - download Brave release zip assets from Brave's GitHub releases
-- verify SHA256 when Brave publishes the `.sha256` asset
+- require and verify Brave's `.sha256` asset by default
 - stage extraction before touching the live install
 - replace only the portable `app/` payload
 - leave `data/` profile contents untouched
