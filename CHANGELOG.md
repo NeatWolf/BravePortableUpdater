@@ -2,6 +2,31 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.6 - 2026-07-08
+
+Install/update-safety release.
+
+- Changed missing Brave `.sha256` files from a warning into a default stop
+  before download or install.
+- Added explicit `-AllowMissingHash` override for users who knowingly accept
+  version-check-only verification for a specific release.
+- Added dry-run output that reports whether SHA256 verification would be used,
+  skipped by explicit override, or required before download.
+
+Verification evidence:
+
+- Script boundary: `Update-BravePortable.cmd` and `Update-BravePortable.ps1`
+  are the only tracked updater scripts.
+- Parser: `PowerShell parse OK`.
+- PSScriptAnalyzer: `PSScriptAnalyzer passed with no findings.`
+- Live dry run: `Update-BravePortable.cmd -NoPause -DryRun -Force` reported
+  no app/profile changes and the Brave SHA256 URL it would verify.
+- Release asset hashes:
+  - `Update-BravePortable.cmd`:
+    `72F2CC3249FF44C25D5121BF2F2827BCB60E7E78065997A90F0276A27153E49A`
+  - `Update-BravePortable.ps1`:
+    `7F6CE390AFCCE5EF552772748DDCABFCED94F72B7306E286001B86B9123C92D9`
+
 ## v0.1.5 - 2026-07-08
 
 Repository-discoverability release.

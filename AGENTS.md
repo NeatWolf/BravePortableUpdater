@@ -45,6 +45,7 @@ Current cycle history:
 - 2026-07-08: Maintenance evidence - documented repeatable verification commands and live dry-run expectations.
 - 2026-07-08: Operator usability - clarified dry-run output and docs so expected log appends are not confused with app/profile changes.
 - 2026-07-08: Repository discoverability - clarified the beginner download path and expected portable folder shape.
+- 2026-07-08: Install/update safety - require Brave SHA256 assets by default and add explicit missing-hash override messaging.
 
 ## Working Rules
 

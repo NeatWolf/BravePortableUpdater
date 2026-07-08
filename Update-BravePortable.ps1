@@ -4,8 +4,8 @@ Updates a Portapps-style Brave Portable app payload.
 
 .DESCRIPTION
 Update-BravePortable resolves the latest public Brave Windows x64 release for
-the selected channel, downloads Brave's GitHub zip asset, verifies the SHA256
-file when available, stages extraction in a temporary folder, verifies the
+the selected channel, downloads Brave's GitHub zip asset, requires Brave's
+SHA256 file by default, stages extraction in a temporary folder, verifies the
 staged brave.exe version, backs up the existing app folder, and installs the new
 app payload.
 
@@ -35,6 +35,10 @@ status lines to its log.
 .PARAMETER WaitForExit
 Wait for Brave Portable processes from this directory to close instead of
 failing immediately.
+
+.PARAMETER AllowMissingHash
+Continue when Brave does not publish a SHA256 file for the selected zip. Without
+this switch, the updater stops before downloading that asset.
 
 .PARAMETER NoPause
 Accepted for parity with Update-BravePortable.cmd. The PowerShell script does
@@ -72,6 +76,7 @@ param(
     [switch]$Launch,
     [switch]$DryRun,
     [switch]$WaitForExit,
+    [switch]$AllowMissingHash,
     [switch]$NoPause
 )
 
@@ -258,11 +263,20 @@ function Resolve-BraveRelease {
 function Save-ReleaseAsset {
     param(
         [Parameter(Mandatory = $true)]$Release,
-        [Parameter(Mandatory = $true)][string]$DownloadDir
+        [Parameter(Mandatory = $true)][string]$DownloadDir,
+        [switch]$AllowMissingHash
     )
 
     New-Item -ItemType Directory -Path $DownloadDir -Force | Out-Null
     $zipPath = Join-Path $DownloadDir $Release.AssetName
+
+    if (-not $Release.Sha256Url) {
+        if (-not $AllowMissingHash) {
+            throw "No SHA256 asset was published for $($Release.AssetName). The updater stopped before downloading or installing anything. Rerun with -AllowMissingHash only if you accept version-check-only verification for this release."
+        }
+
+        Write-Log 'Warning: no SHA256 asset found for this release; -AllowMissingHash was set, so staged brave.exe version verification will be used after extraction.'
+    }
 
     Write-Log "Downloading $($Release.AssetName)..."
     Invoke-WebRequest -Headers @{ 'User-Agent' = 'BravePortableUpdater/1.0' } -Uri $Release.AssetUrl -OutFile $zipPath
@@ -283,9 +297,6 @@ function Save-ReleaseAsset {
         }
 
         Write-Log 'Verified downloaded zip SHA256.'
-    }
-    else {
-        Write-Log 'Warning: no SHA256 asset found for this release; continuing after extraction verification.'
     }
 
     return $zipPath
@@ -399,6 +410,15 @@ try {
     if ($DryRun) {
         Write-Log 'Dry run only. No app payload or profile files were changed; only the updater log may have been appended.'
         Write-Log "Would download: $($release.AssetUrl)"
+        if ($release.Sha256Url) {
+            Write-Log "Would verify SHA256: $($release.Sha256Url)"
+        }
+        elseif ($AllowMissingHash) {
+            Write-Log 'Would continue without Brave SHA256 because -AllowMissingHash was set; staged brave.exe version verification would still run.'
+        }
+        else {
+            Write-Log 'Would stop before download because Brave did not publish a SHA256 file for this asset. Use -AllowMissingHash only if you accept that risk.'
+        }
         Write-Log "Would replace only: $AppDir"
         Write-Log "Would leave profile data untouched: $DataDir"
         exit 0
@@ -410,7 +430,7 @@ try {
     $newAppDir = Join-Path $tempRoot 'new-app'
 
     try {
-        $zipPath = Save-ReleaseAsset -Release $release -DownloadDir $downloadDir
+        $zipPath = Save-ReleaseAsset -Release $release -DownloadDir $downloadDir -AllowMissingHash:$AllowMissingHash
         Expand-BraveZip -ZipPath $zipPath -ExtractDir $extractDir -NewAppDir $newAppDir -ExpectedVersion $release.Version
         $backupApp = Install-AppPayload -NewAppDir $newAppDir -CurrentVersion $installed.Normalized -TargetVersion $release.Version
 

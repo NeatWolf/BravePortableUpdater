@@ -100,7 +100,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Update-BravePortable.p
 ## What It Changes
 
 - Downloads the selected public Brave Windows x64 release zip.
-- Verifies Brave's `.sha256` file when published for that asset.
+- Requires and verifies Brave's `.sha256` file for that asset by default.
 - Extracts into a temporary staging folder first.
 - Verifies the staged `brave.exe` version.
 - Moves the current `app/` folder into `update-backups/`.
@@ -126,6 +126,10 @@ Close Brave first, or use:
 ```bat
 Update-BravePortable.cmd -WaitForExit
 ```
+
+If Brave does not publish a `.sha256` file for the selected zip, the updater
+stops before downloading or installing anything. `-AllowMissingHash` exists only
+for users who knowingly accept version-check-only verification for that release.
 
 Logs are appended to:
 
