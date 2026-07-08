@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.30 - 2026-07-08
+
+Operator-usability release.
+
+- Added beginner guidance for Windows downloaded-file warnings to the `.cmd`
+  help and README Quick Start.
+- Kept updater behavior unchanged.
+
 ## v0.1.29 - 2026-07-08
 
 Code-quality release.

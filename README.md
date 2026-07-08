@@ -37,6 +37,10 @@ Do not put the updater files inside `app\` or `data\`. They belong next to
 After the run, the window stays open and says whether Brave was updated,
 restored, already current, or stopped for a reason that needs attention.
 
+If Windows warns that the files came from the internet, confirm you downloaded
+them from this repository's GitHub release. If each updater file's Properties
+window shows an `Unblock` checkbox, select it and run the updater again.
+
 Manual path: download exactly these two updater files:
 
 - [`Update-BravePortable.cmd`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.cmd)

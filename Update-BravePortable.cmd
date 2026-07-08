@@ -50,6 +50,10 @@ if "%SHOW_HELP%"=="1" (
     echo   The updater changes app\ only. It leaves data\ alone.
     echo   If Brave is open, close it and run this again.
     echo.
+    echo Windows warning:
+    echo   Run only files downloaded from this repository's GitHub release.
+    echo   If Properties shows Unblock, use it before running again.
+    echo.
     echo More options:
     echo   Update-BravePortable.cmd -FullHelp
     if "%PAUSE_AFTER%"=="1" (
