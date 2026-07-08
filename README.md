@@ -149,8 +149,8 @@ update-backups/
 ## Releases
 
 Releases are tagged from `main` and use [CHANGELOG.md](CHANGELOG.md) as the
-source of release notes. Download the two updater files from a release or copy
-them from the repo:
+source of release notes. The repository is public so Windows users can download
+the two updater files directly from the latest GitHub release:
 
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`

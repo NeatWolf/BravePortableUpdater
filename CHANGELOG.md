@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.7 - 2026-07-08
+
+Repository-discoverability release.
+
+- Made the GitHub repository public so average Windows users can reach the repo
+  and release downloads without collaborator access.
+- Clarified in the README that releases are public and contain the two updater
+  files only.
+- Checked tracked content for obvious credentials before changing visibility.
+
 ## v0.1.6 - 2026-07-08
 
 Install/update-safety release.
