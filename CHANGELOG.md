@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.27 - 2026-07-08
+
+PowerShell-help release.
+
+- Added explicit `INPUTS`, `OUTPUTS`, and related-link entries to the full
+  PowerShell help.
+- Kept updater behavior unchanged.
+
 ## v0.1.26 - 2026-07-08
 
 Repository-discoverability release.

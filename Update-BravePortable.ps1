@@ -81,6 +81,19 @@ the updater log.
 Runs against an explicit portable root and waits until that copy of Brave exits
 before updating.
 
+.INPUTS
+None. This script does not accept pipeline input.
+
+.OUTPUTS
+None. The updater writes human-readable status messages and uses the process
+exit code to report success or failure.
+
+.LINK
+https://github.com/NeatWolf/BravePortableUpdater
+
+.LINK
+https://github.com/NeatWolf/BravePortableUpdater/releases/latest
+
 .NOTES
 Use Update-BravePortable.cmd for Explorer launches. The command wrapper keeps
 the window open after completion and prints the log path.
