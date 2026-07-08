@@ -40,6 +40,7 @@ Current cycle history:
 - 2026-07-08: Release packaging - add changelog and release guidance, then tag the first GitHub release.
 - 2026-07-08: Repository discoverability - add contribution and security guidance without adding executable scripts.
 - 2026-07-08: Code quality - run PSScriptAnalyzer and fix all analyzer findings in the updater script.
+- 2026-07-08: Repository discoverability - add code of conduct, issue template, and PR template.
 
 ## Working Rules
 

@@ -142,7 +142,8 @@ This repository does not publish Brave or Portapps binaries.
 ## Contributing And Security
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for scope, safety rules, and verification
-expectations. Report security-sensitive issues using [SECURITY.md](SECURITY.md).
+expectations. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for participation
+rules. Report security-sensitive issues using [SECURITY.md](SECURITY.md).
 
 ## Recovery
 

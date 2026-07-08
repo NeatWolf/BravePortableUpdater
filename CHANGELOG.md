@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.2 - 2026-07-08
+
+Community-profile release.
+
+- Added `CODE_OF_CONDUCT.md`.
+- Added GitHub issue and pull request templates.
+- Linked contribution, conduct, and security guidance from the README.
+
 ## v0.1.1 - 2026-07-08
 
 Code-quality release.
