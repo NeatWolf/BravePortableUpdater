@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.14 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Updated the bug report template to use the current screen-only repro command:
+  `Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog`.
+- Clarified that log excerpts are only expected when `-NoLog` was not used.
+- Kept behavior unchanged and release packaging limited to the two updater
+  files.
+
 ## v0.1.13 - 2026-07-08
 
 Repository-discoverability release.

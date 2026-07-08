@@ -20,7 +20,7 @@ What went wrong?
 ## Command
 
 ```text
-Update-BravePortable.cmd -NoPause -DryRun
+Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog
 ```
 
 ## Expected Behavior
@@ -33,8 +33,9 @@ What happened instead?
 
 ## Relevant Output
 
-Paste console output or relevant `brave-portable-update.log` lines. Do not paste
-profile contents, cookies, credentials, wallet data, or other private files.
+Paste console output. If you did not use `-NoLog`, you may also paste relevant
+`brave-portable-update.log` lines. Do not paste profile contents, cookies,
+credentials, wallet data, or other private files.
 
 ```text
 
