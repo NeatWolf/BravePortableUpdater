@@ -66,6 +66,7 @@ Current cycle history:
 - 2026-07-08: Install/update safety - added portable-drive free-space preflight before replacing the live app payload.
 - 2026-07-08: Repository discoverability - made the README first-run path a short beginner checklist.
 - 2026-07-08: PowerShell help - filled full help inputs, outputs, and related links.
+- 2026-07-08: Maintenance evidence - aligned the PR template with the self-contained analyzer checklist.
 
 ## Working Rules
 

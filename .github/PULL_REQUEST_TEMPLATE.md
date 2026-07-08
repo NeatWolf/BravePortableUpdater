@@ -17,14 +17,18 @@ Choose the closest category:
 ## Verification
 
 Paste the commands that match the change. See `VERIFICATION.md` for the full
-checklist and expected evidence.
+checklist and expected evidence. For PSScriptAnalyzer, use the checklist
+command from `VERIFICATION.md`; it works even when the analyzer is not already
+installed.
 
 ```powershell
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; "PowerShell parse OK"'
 ```
 
-```powershell
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { 'PSScriptAnalyzer passed with no findings.' }"
+PSScriptAnalyzer result:
+
+```text
+PSScriptAnalyzer passed with no findings.
 ```
 
 ```bat

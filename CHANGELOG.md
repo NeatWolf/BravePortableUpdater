@@ -2,6 +2,14 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.28 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Aligned the pull request template with the self-contained PSScriptAnalyzer
+  verification flow in `VERIFICATION.md`.
+- Kept updater behavior and release assets unchanged.
+
 ## v0.1.27 - 2026-07-08
 
 PowerShell-help release.
