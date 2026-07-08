@@ -46,13 +46,49 @@ if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }
 'PowerShell parse OK'
 ```
 
-Run PSScriptAnalyzer:
+Run PSScriptAnalyzer. This command uses an installed copy when available; if
+not, it downloads a temporary copy, runs the check, and removes the temporary
+module folder afterward.
 
 ```powershell
-Import-Module PSScriptAnalyzer -Force
+$tempRoot = [System.IO.Path]::GetFullPath($env:TEMP)
+$temp = $null
+try {
+    if (Get-Command Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue) {
+        $results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error
+        if ($results) { $results | Format-Table -AutoSize; exit 1 }
+    }
+    else {
+        $temp = Join-Path $tempRoot ('pssa-' + [guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path $temp -Force | Out-Null
+        Save-Module -Name PSScriptAnalyzer -Path $temp -Force -ErrorAction Stop
+        Get-ChildItem -LiteralPath $temp -Recurse -File | Unblock-File -ErrorAction SilentlyContinue
+        $manifest = Get-ChildItem -LiteralPath $temp -Recurse -Filter PSScriptAnalyzer.psd1 | Select-Object -First 1
+        $env:PSSA_MANIFEST = $manifest.FullName
+        $env:PSSA_REPO = (Get-Location).Path
+        $child = @'
+$ProgressPreference = 'SilentlyContinue'
+Import-Module $env:PSSA_MANIFEST -Force -ErrorAction Stop
+Set-Location -LiteralPath $env:PSSA_REPO
 $results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error
-if ($results) { $results | Format-Table -AutoSize; exit 1 }
-'PSScriptAnalyzer passed with no findings.'
+if ($results) {
+    $results | Format-Table -AutoSize
+    exit 1
+}
+'@
+        $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($child))
+        powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand $encoded
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+    }
+    'PSScriptAnalyzer passed with no findings.'
+}
+finally {
+    Remove-Item Env:\PSSA_MANIFEST -ErrorAction SilentlyContinue
+    Remove-Item Env:\PSSA_REPO -ErrorAction SilentlyContinue
+    if ($temp -and (Test-Path -LiteralPath $temp)) {
+        Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
 ```
 
 ## Live Portable Dry Run

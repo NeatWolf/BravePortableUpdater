@@ -201,7 +201,6 @@ git status --short --branch
 git ls-files -- '*.cmd' '*.ps1'
 Get-FileHash -Algorithm SHA256 -LiteralPath .\Update-BravePortable.cmd, .\Update-BravePortable.ps1
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; Write-Output ''PowerShell parse OK'''
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { Write-Output 'PSScriptAnalyzer passed with no findings.' }"
 cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog"
 ```
 
@@ -209,6 +208,8 @@ The dry run must report what would happen without changing the app payload or
 profile files. Use `-Force` with `-DryRun` on an already-current install to
 exercise the dry-run action lines without downloading or replacing `app/`. Add
 `-NoLog` when the check must also avoid appending `brave-portable-update.log`.
+Run the PSScriptAnalyzer command in [VERIFICATION.md](VERIFICATION.md) as part
+of the full checklist; it works even when the analyzer is not already installed.
 If the live portable copy of Brave is running, process detection is a valid
 safety result: close Brave or rerun with `-WaitForExit` only when an actual
 update is intended.

@@ -34,9 +34,9 @@ Before submitting a change, run the checks that match the change:
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; "PowerShell parse OK"'
 ```
 
-```powershell
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { 'PSScriptAnalyzer passed with no findings.' }"
-```
+Run the PSScriptAnalyzer command from [VERIFICATION.md](VERIFICATION.md). It
+uses an installed analyzer when available and falls back to a temporary module
+download when it is not already installed.
 
 ```bat
 D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog

@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.24 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Made the documented PSScriptAnalyzer verification command self-contained when
+  the analyzer is not already installed.
+- Pointed contributor and README verification guidance to the shared checklist.
+- Kept updater behavior and release assets unchanged.
+
 ## v0.1.23 - 2026-07-08
 
 Release-packaging release.
