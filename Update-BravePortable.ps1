@@ -234,6 +234,22 @@ function Invoke-BraveVersionsRequest {
     Invoke-RestMethod -Headers $headers -Uri $Uri
 }
 
+function Get-ReleaseAssetDownloadUrl {
+    param([Parameter(Mandatory = $true)]$Asset)
+
+    $downloadUrl = $Asset.PSObject.Properties['download_url']
+    if ($downloadUrl -and $downloadUrl.Value) {
+        return $downloadUrl.Value
+    }
+
+    $browserDownloadUrl = $Asset.PSObject.Properties['browser_download_url']
+    if ($browserDownloadUrl -and $browserDownloadUrl.Value) {
+        return $browserDownloadUrl.Value
+    }
+
+    return $null
+}
+
 function Resolve-BraveRelease {
     param([Parameter(Mandatory = $true)][string]$RequestedEdition)
 
@@ -251,26 +267,54 @@ function Resolve-BraveRelease {
     $records = @($allVersions.PSObject.Properties.Value | Where-Object { $_.channel -eq $channel })
     $record = $records | Where-Object { $_.name -eq $targetVersion -or $_.tag -eq "v$targetVersion" } | Select-Object -First 1
 
-    if (-not $record) {
-        throw "Brave versions JSON did not contain channel '$channel' version '$targetVersion'."
+    if ($record) {
+        $tag = $record.tag
+        $published = $record.published
+        $assets = $record.github.assets
+    }
+    else {
+        $tag = "v$targetVersion"
+        $githubReleaseUri = "https://api.github.com/repos/brave/brave-browser/releases/tags/$tag"
+        Write-Log "Warning: Brave versions JSON does not list $channel $targetVersion yet; checking GitHub release $tag directly..."
+        try {
+            $githubRelease = Invoke-BraveVersionsRequest $githubReleaseUri
+        }
+        catch {
+            throw "Brave versions JSON did not contain channel '$channel' version '$targetVersion', and GitHub release lookup failed for $tag. $($_.Exception.Message)"
+        }
+
+        $published = $githubRelease.published_at
+        $assets = $githubRelease.assets
     }
 
     $assetName = "brave-v$targetVersion-win32-x64.zip"
-    $asset = $record.github.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
+    $asset = $assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
     if (-not $asset) {
-        throw "Release $($record.tag) does not contain expected asset '$assetName'."
+        throw "Release $tag does not contain expected asset '$assetName'."
     }
 
-    $shaAsset = $record.github.assets | Where-Object { $_.name -eq "$assetName.sha256" } | Select-Object -First 1
+    $shaAsset = $assets | Where-Object { $_.name -eq "$assetName.sha256" } | Select-Object -First 1
+    $assetUrl = Get-ReleaseAssetDownloadUrl $asset
+    if (-not $assetUrl) {
+        throw "Release $tag asset '$assetName' did not include a download URL."
+    }
+
+    $sha256Url = $null
+    if ($shaAsset) {
+        $sha256Url = Get-ReleaseAssetDownloadUrl $shaAsset
+        if (-not $sha256Url) {
+            throw "Release $tag asset '$assetName.sha256' did not include a download URL."
+        }
+    }
 
     [pscustomobject]@{
         Channel = $channel
         Version = $targetVersion
-        Tag = $record.tag
-        Published = $record.published
+        Tag = $tag
+        Published = $published
         AssetName = $asset.name
-        AssetUrl = $asset.download_url
-        Sha256Url = if ($shaAsset) { $shaAsset.download_url } else { $null }
+        AssetUrl = $assetUrl
+        Sha256Url = $sha256Url
     }
 }
 

@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.15 - 2026-07-08
+
+Resolver reliability release.
+
+- Added a GitHub release-tag fallback when Brave's latest-version endpoint is
+  ahead of `brave-versions.json`.
+- Preserved the existing asset and SHA256 checks when using the fallback.
+- Fixed the observed `Brave versions JSON did not contain channel 'release'`
+  error for feed-skewed Brave releases.
+
 ## v0.1.14 - 2026-07-08
 
 Maintenance-evidence release.
