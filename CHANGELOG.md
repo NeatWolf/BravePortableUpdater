@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.26 - 2026-07-08
+
+Repository-discoverability release.
+
+- Reworked the Quick Start into a short first-run checklist for less technical
+  Windows users.
+- Clarified that the updater files belong next to `brave-portable.exe`, not
+  inside `app\` or `data\`.
+- Kept updater behavior and release assets unchanged.
+
 ## v0.1.25 - 2026-07-08
 
 Install/update-safety release.

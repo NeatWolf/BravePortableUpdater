@@ -64,6 +64,7 @@ Current cycle history:
 - 2026-07-08: Release packaging - documented a convenience zip bundle containing only the two updater scripts and checksum manifest.
 - 2026-07-08: Maintenance evidence - made analyzer verification reproducible with a temporary-module fallback and linked docs to the shared checklist.
 - 2026-07-08: Install/update safety - added portable-drive free-space preflight before replacing the live app payload.
+- 2026-07-08: Repository discoverability - made the README first-run path a short beginner checklist.
 
 ## Working Rules
 

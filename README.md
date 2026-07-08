@@ -22,9 +22,20 @@ Brave's own GitHub release zips.
 
 ## Quick Start
 
-Easiest path: download
-[`BravePortableUpdater.zip`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/BravePortableUpdater.zip),
-open it, and copy its contents next to `brave-portable.exe`.
+For most users:
+
+1. Download the latest
+   [`BravePortableUpdater.zip`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/BravePortableUpdater.zip),
+   then open the zip.
+2. Put the zip contents in the same folder as `brave-portable.exe`.
+3. Close Brave Portable if it is open.
+4. Double-click `Update-BravePortable.cmd`.
+
+Do not put the updater files inside `app\` or `data\`. They belong next to
+`brave-portable.exe`.
+
+After the run, the window stays open and says whether Brave was updated,
+restored, already current, or stopped for a reason that needs attention.
 
 Manual path: download exactly these two updater files:
 
