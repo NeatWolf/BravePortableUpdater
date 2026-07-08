@@ -42,6 +42,7 @@ The updater is intended to:
 - download Brave release zip assets from Brave's GitHub releases
 - require and verify Brave's `.sha256` asset by default
 - stage extraction before touching the live install
+- check portable-drive free space before replacing `app/`
 - replace only the portable `app/` payload
 - leave `data/` profile contents untouched
 

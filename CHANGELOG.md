@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.25 - 2026-07-08
+
+Install/update-safety release.
+
+- Added a free-space preflight before replacing the live `app/` payload.
+- Included the free-space preflight in dry-run action output.
+- Kept the check scoped to the staged app payload and portable drive; `data/`
+  remains untouched.
+
 ## v0.1.24 - 2026-07-08
 
 Maintenance-evidence release.

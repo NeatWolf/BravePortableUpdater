@@ -142,6 +142,7 @@ $BackupRoot = Join-Path $PortableDir 'update-backups'
 $LogPath = Join-Path $PortableDir 'brave-portable-update.log'
 $MetadataRequestTimeoutSec = 60
 $DownloadRequestTimeoutSec = 300
+$InstallFreeSpaceMarginBytes = 256MB
 $BraveRequestHeaders = @{ 'User-Agent' = 'BravePortableUpdater/1.0' }
 
 function Write-Log {
@@ -203,6 +204,61 @@ function Get-BraveVersionFromAppDir {
 
 function Get-InstalledBraveVersion {
     Get-BraveVersionFromAppDir -Path $AppDir
+}
+
+function Format-ByteSize {
+    param([Parameter(Mandatory = $true)][long]$Bytes)
+
+    if ($Bytes -ge 1GB) {
+        return '{0:N1} GB' -f ($Bytes / 1GB)
+    }
+
+    return '{0:N1} MB' -f ($Bytes / 1MB)
+}
+
+function Get-DirectoryByteSize {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $total = [long]0
+    Get-ChildItem -LiteralPath $Path -Recurse -Force -File | ForEach-Object {
+        $total += $_.Length
+    }
+
+    return $total
+}
+
+function Get-FreeSpaceForPath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $root = [System.IO.Path]::GetPathRoot((Resolve-FullPath $Path))
+    if (-not $root) {
+        throw "Could not resolve drive root for free-space check: $Path"
+    }
+
+    $drive = New-Object -TypeName System.IO.DriveInfo -ArgumentList $root
+    [pscustomobject]@{
+        Root = $root
+        Available = [long]$drive.AvailableFreeSpace
+    }
+}
+
+function Assert-FreeSpaceForAppInstall {
+    param([Parameter(Mandatory = $true)][string]$NewAppDir)
+
+    $portableSpace = Get-FreeSpaceForPath -Path $PortableDir
+    $newAppRoot = [System.IO.Path]::GetPathRoot((Resolve-FullPath $NewAppDir))
+    $newAppBytes = Get-DirectoryByteSize -Path $NewAppDir
+    $requiredBytes = $InstallFreeSpaceMarginBytes
+
+    if (-not $newAppRoot.Equals($portableSpace.Root, [System.StringComparison]::OrdinalIgnoreCase)) {
+        $requiredBytes += $newAppBytes
+    }
+
+    if ($portableSpace.Available -lt $requiredBytes) {
+        throw "Not enough free space on $($portableSpace.Root) to install the staged app payload. Available: $(Format-ByteSize $portableSpace.Available). Required: $(Format-ByteSize $requiredBytes). Free some space and run the updater again. Profile data was not modified: $DataDir"
+    }
+
+    Write-Log "Free space check passed on $($portableSpace.Root): $(Format-ByteSize $portableSpace.Available) available."
 }
 
 function Get-PortableBraveProcess {
@@ -447,6 +503,7 @@ function Install-AppPayload {
     )
 
     New-Item -ItemType Directory -Path $BackupRoot -Force | Out-Null
+    Assert-FreeSpaceForAppInstall -NewAppDir $NewAppDir
 
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $safeCurrent = if ($CurrentVersion) { $CurrentVersion } else { 'unknown' }
@@ -618,6 +675,7 @@ try {
             Write-Log 'Would stop before download because Brave did not publish a SHA256 file for this asset. Use -AllowMissingHash only if you accept that risk.'
         }
         Write-Log "Would replace only: $AppDir"
+        Write-Log "Would check free space before installing into: $PortableDir"
         Write-Log "Would leave profile data untouched: $DataDir"
         exit 0
     }

@@ -129,6 +129,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Update-BravePortable.p
 - Requires and verifies Brave's `.sha256` file for that asset by default.
 - Extracts into a temporary staging folder first.
 - Verifies the staged `brave.exe` version.
+- Checks available space on the portable drive before the live `app/` swap.
 - Moves the current `app/` folder into `update-backups/`.
 - Installs the new Brave payload into `app/`.
 - When `-RestoreLatestBackup` is used, moves the current `app/` folder into
@@ -159,6 +160,9 @@ Update-BravePortable.cmd -WaitForExit
 If Brave does not publish a `.sha256` file for the selected zip, the updater
 stops before downloading or installing anything. `-AllowMissingHash` exists only
 for users who knowingly accept version-check-only verification for that release.
+
+Before replacing `app/`, the updater checks that the portable drive has enough
+free space for the staged app payload plus a small safety margin.
 
 Logs are appended to:
 
