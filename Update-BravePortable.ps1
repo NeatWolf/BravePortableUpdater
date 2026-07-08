@@ -1,3 +1,65 @@
+<#
+.SYNOPSIS
+Updates a Portapps-style Brave Portable app payload.
+
+.DESCRIPTION
+Update-BravePortable resolves the latest public Brave Windows x64 release for
+the selected channel, downloads Brave's GitHub zip asset, verifies the SHA256
+file when available, stages extraction in a temporary folder, verifies the
+staged brave.exe version, backs up the existing app folder, and installs the new
+app payload.
+
+The updater is intentionally scoped to the app payload. It does not create,
+delete, or modify the portable data directory that contains the user's profile,
+bookmarks, extensions, settings, cookies, and sessions.
+
+.PARAMETER Edition
+Brave channel to install. The default is stable. The release alias is accepted
+for stable.
+
+.PARAMETER PortableDir
+Path to the Portapps Brave Portable root that contains brave-portable.exe and
+app. When omitted, the script uses its own directory.
+
+.PARAMETER Force
+Reinstall the currently resolved Brave version even if it is already installed.
+
+.PARAMETER Launch
+Launch brave-portable.exe after a successful update or current-version check.
+
+.PARAMETER DryRun
+Resolve versions and report intended actions without downloading or changing
+files.
+
+.PARAMETER WaitForExit
+Wait for Brave Portable processes from this directory to close instead of
+failing immediately.
+
+.PARAMETER NoPause
+Accepted for parity with Update-BravePortable.cmd. The PowerShell script does
+not pause by itself.
+
+.EXAMPLE
+.\Update-BravePortable.ps1 -DryRun
+
+Checks the target portable folder and reports whether the stable channel would
+update without changing files.
+
+.EXAMPLE
+.\Update-BravePortable.ps1 -Edition beta
+
+Updates the portable app payload to the latest public beta channel build.
+
+.EXAMPLE
+.\Update-BravePortable.ps1 -PortableDir D:\Portable\brave-portable -WaitForExit
+
+Runs against an explicit portable root and waits until that copy of Brave exits
+before updating.
+
+.NOTES
+Use Update-BravePortable.cmd for Explorer launches. The command wrapper keeps
+the window open after completion and prints the log path.
+#>
 [CmdletBinding()]
 param(
     [ValidateSet('stable', 'release', 'beta', 'nightly')]

@@ -40,6 +40,12 @@ be read.
 
 ## Examples
 
+Show built-in help:
+
+```bat
+Update-BravePortable.cmd -Help
+```
+
 Preview without changing files:
 
 ```bat
