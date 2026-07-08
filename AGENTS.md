@@ -52,6 +52,7 @@ Current cycle history:
 - 2026-07-08: Maintenance evidence - enabled and verified GitHub private vulnerability reporting for the public repo.
 - 2026-07-08: PowerShell help - added a screen-only dry-run example for already-current installs.
 - 2026-07-08: Maintenance evidence - aligned contributor live verification with the no-log dry-run command.
+- 2026-07-08: Repository discoverability - aligned pull request template live verification with the no-log dry-run command.
 
 ## Working Rules
 

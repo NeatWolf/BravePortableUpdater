@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.13 - 2026-07-08
+
+Repository-discoverability release.
+
+- Updated the pull request template to use the current screen-only live
+  verification command: `Update-BravePortable.cmd -NoPause -DryRun -Force
+  -NoLog`.
+- Kept behavior unchanged and release packaging limited to the two updater
+  files.
+
 ## v0.1.12 - 2026-07-08
 
 Maintenance-evidence release.
