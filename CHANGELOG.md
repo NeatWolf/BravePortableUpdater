@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.4 - 2026-07-08
+
+Operator-usability release.
+
+- Clarified dry-run output so it distinguishes app/profile changes from the
+  expected updater log append.
+- Documented the same dry-run/log behavior in the README.
+- Kept the release package limited to the two updater files.
+
 ## v0.1.3 - 2026-07-08
 
 Maintenance-evidence release.

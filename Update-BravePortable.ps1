@@ -29,7 +29,8 @@ Launch brave-portable.exe after a successful update or current-version check.
 
 .PARAMETER DryRun
 Resolve versions and report intended actions without downloading or changing
-files.
+the Brave app payload or portable profile files. The updater still appends
+status lines to its log.
 
 .PARAMETER WaitForExit
 Wait for Brave Portable processes from this directory to close instead of
@@ -43,7 +44,7 @@ not pause by itself.
 .\Update-BravePortable.ps1 -DryRun
 
 Checks the target portable folder and reports whether the stable channel would
-update without changing files.
+update without changing the app payload or profile files.
 
 .EXAMPLE
 .\Update-BravePortable.ps1 -Edition beta
@@ -396,7 +397,7 @@ try {
     }
 
     if ($DryRun) {
-        Write-Log 'Dry run only. No files were changed.'
+        Write-Log 'Dry run only. No app payload or profile files were changed; only the updater log may have been appended.'
         Write-Log "Would download: $($release.AssetUrl)"
         Write-Log "Would replace only: $AppDir"
         Write-Log "Would leave profile data untouched: $DataDir"

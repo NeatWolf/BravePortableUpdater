@@ -43,12 +43,15 @@ Current cycle history:
 - 2026-07-08: Code quality - run PSScriptAnalyzer and fix all analyzer findings in the updater script.
 - 2026-07-08: Repository discoverability - add code of conduct, issue template, and PR template.
 - 2026-07-08: Maintenance evidence - documented repeatable verification commands and live dry-run expectations.
+- 2026-07-08: Operator usability - clarified dry-run output and docs so expected log appends are not confused with app/profile changes.
 
 ## Working Rules
 
 - Do not modify or delete a user's live `data/` profile directory.
 - Do not run an updater path that can change the live install unless the current
   task requires it; prefer `-DryRun` for verification.
+- On an already-current install, use `-Force -DryRun` to exercise dry-run action
+  messages without downloading or replacing `app/`.
 - If Brave is running, treat that as a successful safety check, not a failure to
   work around.
 - Copy script changes into `D:\Portable\brave-portable` when the change affects
