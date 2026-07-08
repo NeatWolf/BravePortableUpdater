@@ -22,10 +22,13 @@ Brave's own GitHub release zips.
 
 ## Quick Start
 
-From the latest GitHub release, download exactly these two files:
+From the latest GitHub release, download exactly these two updater files:
 
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`
+
+The release also includes `SHA256SUMS.txt` so users who know how to verify
+downloads can check that the two updater files arrived unchanged.
 
 Put both files in the same folder as `brave-portable.exe`. A typical folder
 looks like this before you run the updater:
@@ -171,7 +174,9 @@ the two updater files directly from the latest GitHub release:
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`
 
-This repository does not publish Brave or Portapps binaries.
+Each release also carries `SHA256SUMS.txt`, a small text file with SHA256 hashes
+for those two updater files. This repository does not publish Brave or Portapps
+binaries.
 
 ## Maintainer Verification
 
@@ -180,6 +185,7 @@ Before tagging a release, run the same checks from a clean working tree:
 ```powershell
 git status --short --branch
 git ls-files -- '*.cmd' '*.ps1'
+Get-FileHash -Algorithm SHA256 -LiteralPath .\Update-BravePortable.cmd, .\Update-BravePortable.ps1
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; Write-Output ''PowerShell parse OK'''
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { Write-Output 'PSScriptAnalyzer passed with no findings.' }"
 cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog"
@@ -192,8 +198,9 @@ exercise the dry-run action lines without downloading or replacing `app/`. Add
 If the live portable copy of Brave is running, process detection is a valid
 safety result: close Brave or rerun with `-WaitForExit` only when an actual
 update is intended.
-The only release assets are `Update-BravePortable.cmd` and
-`Update-BravePortable.ps1`.
+The only executable release assets are `Update-BravePortable.cmd` and
+`Update-BravePortable.ps1`; `SHA256SUMS.txt` is a non-executable checksum
+manifest for those files.
 
 ## Contributing And Security
 

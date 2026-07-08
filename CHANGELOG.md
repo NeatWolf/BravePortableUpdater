@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.18 - 2026-07-08
+
+Release-packaging release.
+
+- Added `SHA256SUMS.txt` for the two updater files.
+- Documented that releases include the two executable updater assets plus the
+  non-executable checksum manifest.
+- Added checksum generation to maintainer verification guidance.
+
 ## v0.1.17 - 2026-07-08
 
 Install/update-safety release.

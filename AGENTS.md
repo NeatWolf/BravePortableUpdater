@@ -56,6 +56,7 @@ Current cycle history:
 - 2026-07-08: Maintenance evidence - aligned bug report repro guidance with the no-log dry-run command.
 - 2026-07-08: Operator usability - made Brave release feed-skew messages understandable without knowing Brave's JSON feeds.
 - 2026-07-08: Install/update safety - added guarded latest-backup restore with dry-run preview and profile-safe docs.
+- 2026-07-08: Release packaging - added a checksum manifest for the two updater files and documented release asset expectations.
 
 ## Working Rules
 
