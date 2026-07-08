@@ -59,6 +59,7 @@ Current cycle history:
 - 2026-07-08: Release packaging - added a checksum manifest for the two updater files and documented release asset expectations.
 - 2026-07-08: Maintenance evidence - added a local verification checklist for repo checks, live dry-run evidence, restore previews, and release assets.
 - 2026-07-08: Repository discoverability - added direct latest-release download links for the two updater files and checksum manifest.
+- 2026-07-08: Operator usability - made `.cmd -Help` beginner-focused and added `.cmd -FullHelp` for complete PowerShell help.
 
 ## Working Rules
 

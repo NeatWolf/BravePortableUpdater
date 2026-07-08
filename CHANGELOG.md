@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.21 - 2026-07-08
+
+Operator-usability release.
+
+- Changed `Update-BravePortable.cmd -Help` to show a short beginner-focused help
+  screen.
+- Added `Update-BravePortable.cmd -FullHelp` for the complete PowerShell help.
+- Kept updater behavior unchanged.
+
 ## v0.1.20 - 2026-07-08
 
 Repository-discoverability release.

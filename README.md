@@ -62,6 +62,12 @@ Show built-in help:
 Update-BravePortable.cmd -Help
 ```
 
+Show the full PowerShell help:
+
+```bat
+Update-BravePortable.cmd -FullHelp
+```
+
 Preview without changing files:
 
 ```bat
