@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.22 - 2026-07-08
+
+Code-quality release.
+
+- Added explicit timeouts for Brave release metadata, zip, and checksum
+  downloads.
+- Centralized updater web request headers and download error handling.
+- Kept update, dry-run, backup, restore, and profile boundaries unchanged.
+
 ## v0.1.21 - 2026-07-08
 
 Operator-usability release.

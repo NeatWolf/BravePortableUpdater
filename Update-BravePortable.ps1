@@ -140,6 +140,9 @@ $AppDir = Join-Path $PortableDir 'app'
 $DataDir = Join-Path $PortableDir 'data'
 $BackupRoot = Join-Path $PortableDir 'update-backups'
 $LogPath = Join-Path $PortableDir 'brave-portable-update.log'
+$MetadataRequestTimeoutSec = 60
+$DownloadRequestTimeoutSec = 300
+$BraveRequestHeaders = @{ 'User-Agent' = 'BravePortableUpdater/1.0' }
 
 function Write-Log {
     param([Parameter(Mandatory = $true)][string]$Message)
@@ -247,8 +250,27 @@ Or run Update-BravePortable.cmd -WaitForExit to leave this updater waiting until
 function Invoke-BraveVersionsRequest {
     param([Parameter(Mandatory = $true)][string]$Uri)
 
-    $headers = @{ 'User-Agent' = 'BravePortableUpdater/1.0' }
-    Invoke-RestMethod -Headers $headers -Uri $Uri
+    try {
+        Invoke-RestMethod -Headers $BraveRequestHeaders -Uri $Uri -TimeoutSec $MetadataRequestTimeoutSec
+    }
+    catch {
+        throw "Could not reach Brave release metadata at $Uri within $MetadataRequestTimeoutSec seconds. Check your internet connection or try again later. Technical detail: $($_.Exception.Message)"
+    }
+}
+
+function Save-BraveDownload {
+    param(
+        [Parameter(Mandatory = $true)][string]$Uri,
+        [Parameter(Mandatory = $true)][string]$OutFile,
+        [Parameter(Mandatory = $true)][string]$Description
+    )
+
+    try {
+        Invoke-WebRequest -Headers $BraveRequestHeaders -Uri $Uri -OutFile $OutFile -TimeoutSec $DownloadRequestTimeoutSec
+    }
+    catch {
+        throw "Could not download $Description within $DownloadRequestTimeoutSec seconds. Check your internet connection or try again later. Technical detail: $($_.Exception.Message)"
+    }
 }
 
 function Get-ReleaseAssetDownloadUrl {
@@ -354,11 +376,11 @@ function Save-ReleaseAsset {
     }
 
     Write-Log "Downloading $($Release.AssetName)..."
-    Invoke-WebRequest -Headers @{ 'User-Agent' = 'BravePortableUpdater/1.0' } -Uri $Release.AssetUrl -OutFile $zipPath
+    Save-BraveDownload -Uri $Release.AssetUrl -OutFile $zipPath -Description $Release.AssetName
 
     if ($Release.Sha256Url) {
         $shaPath = "$zipPath.sha256"
-        Invoke-WebRequest -Headers @{ 'User-Agent' = 'BravePortableUpdater/1.0' } -Uri $Release.Sha256Url -OutFile $shaPath
+        Save-BraveDownload -Uri $Release.Sha256Url -OutFile $shaPath -Description "$($Release.AssetName).sha256"
         $expectedText = Get-Content -LiteralPath $shaPath -Raw
         $match = [regex]::Match($expectedText, '([a-fA-F0-9]{64})')
         if (-not $match.Success) {
