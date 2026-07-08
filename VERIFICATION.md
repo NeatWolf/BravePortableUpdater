@@ -100,6 +100,13 @@ Get-Content -LiteralPath .\SHA256SUMS.txt
 
 Attach only:
 
+- `BravePortableUpdater.zip`
+- `Update-BravePortable.cmd`
+- `Update-BravePortable.ps1`
+- `SHA256SUMS.txt`
+
+The zip must contain exactly:
+
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`
 - `SHA256SUMS.txt`

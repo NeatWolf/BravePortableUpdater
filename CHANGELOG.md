@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.23 - 2026-07-08
+
+Release-packaging release.
+
+- Added a documented `BravePortableUpdater.zip` convenience bundle for GitHub
+  releases.
+- Kept the bundle limited to `Update-BravePortable.cmd`,
+  `Update-BravePortable.ps1`, and `SHA256SUMS.txt`.
+- Preserved the two-script boundary for executable files.
+
 ## v0.1.22 - 2026-07-08
 
 Code-quality release.

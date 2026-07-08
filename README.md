@@ -22,12 +22,16 @@ Brave's own GitHub release zips.
 
 ## Quick Start
 
-Download exactly these two updater files:
+Easiest path: download
+[`BravePortableUpdater.zip`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/BravePortableUpdater.zip),
+open it, and copy its contents next to `brave-portable.exe`.
+
+Manual path: download exactly these two updater files:
 
 - [`Update-BravePortable.cmd`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.cmd)
 - [`Update-BravePortable.ps1`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.ps1)
 
-They come from the latest GitHub release. The release also includes
+They come from the latest GitHub release. The zip and release also include
 [`SHA256SUMS.txt`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/SHA256SUMS.txt)
 so users who know how to verify downloads can check that the two updater files
 arrived unchanged.
@@ -209,8 +213,9 @@ If the live portable copy of Brave is running, process detection is a valid
 safety result: close Brave or rerun with `-WaitForExit` only when an actual
 update is intended.
 The only executable release assets are `Update-BravePortable.cmd` and
-`Update-BravePortable.ps1`; `SHA256SUMS.txt` is a non-executable checksum
-manifest for those files.
+`Update-BravePortable.ps1`. `BravePortableUpdater.zip` is a convenience bundle
+containing those two scripts plus `SHA256SUMS.txt`, and `SHA256SUMS.txt` is a
+non-executable checksum manifest for the scripts.
 
 ## Contributing And Security
 
