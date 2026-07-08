@@ -90,6 +90,12 @@ Force reinstall of the current resolved version:
 Update-BravePortable.cmd -Force
 ```
 
+Preview restoring the newest app backup:
+
+```bat
+Update-BravePortable.cmd -RestoreLatestBackup -DryRun -NoLog
+```
+
 Run without the final pause, for scheduled tasks or automation:
 
 ```bat
@@ -110,6 +116,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Update-BravePortable.p
 - Verifies the staged `brave.exe` version.
 - Moves the current `app/` folder into `update-backups/`.
 - Installs the new Brave payload into `app/`.
+- When `-RestoreLatestBackup` is used, moves the current `app/` folder into
+  `update-backups/` and restores the newest saved app payload into `app/`.
 
 ## What It Does Not Change
 
@@ -195,9 +203,21 @@ rules. Report security-sensitive issues using [SECURITY.md](SECURITY.md).
 
 ## Recovery
 
-If a new Brave payload misbehaves, close Brave, rename the current `app/`
-folder, and move the most recent backup from `update-backups/` back to `app/`.
-The profile in `data/` is separate from this app-payload swap.
+If a new Brave payload misbehaves, close Brave and preview the restore first:
+
+```bat
+Update-BravePortable.cmd -RestoreLatestBackup -DryRun -NoLog
+```
+
+If the preview selects the backup you want, run:
+
+```bat
+Update-BravePortable.cmd -RestoreLatestBackup
+```
+
+The restore uses the same running-process safety check as updates. It moves the
+current `app/` folder into `update-backups/`, restores the newest saved app
+payload into `app/`, and leaves `data/` untouched.
 
 ## Credits
 

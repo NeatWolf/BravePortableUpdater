@@ -29,7 +29,7 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0Update-Bra
 set "EXIT_CODE=%ERRORLEVEL%"
 if not "%EXIT_CODE%"=="0" (
     echo.
-    echo Update did not complete.
+    echo Requested updater action did not complete.
     if "%NO_LOG%"=="1" (
         echo Log: disabled by -NoLog.
     ) else (
@@ -43,7 +43,7 @@ if not "%EXIT_CODE%"=="0" (
     exit /b %EXIT_CODE%
 )
 echo.
-echo Updater finished. Review the status above to see whether Brave was updated or already current.
+echo Updater finished. Review the status above to see whether Brave was updated, restored, or already current.
 if "%NO_LOG%"=="1" (
     echo Log: disabled by -NoLog.
 ) else (

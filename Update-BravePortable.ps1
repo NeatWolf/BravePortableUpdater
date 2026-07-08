@@ -32,6 +32,10 @@ Resolve versions and report intended actions without downloading or changing
 the Brave app payload or portable profile files. Unless -NoLog is set, the
 updater still appends status lines to its log.
 
+.PARAMETER RestoreLatestBackup
+Restore the newest app payload backup from update-backups instead of resolving
+or downloading a Brave release. Use with -DryRun first to preview the restore.
+
 .PARAMETER WaitForExit
 Wait for Brave Portable processes from this directory to close instead of
 failing immediately.
@@ -66,6 +70,12 @@ even when Brave is already current, without appending the updater log.
 Updates the portable app payload to the latest public beta channel build.
 
 .EXAMPLE
+.\Update-BravePortable.ps1 -RestoreLatestBackup -DryRun -NoLog
+
+Shows which app payload backup would be restored without changing app, data, or
+the updater log.
+
+.EXAMPLE
 .\Update-BravePortable.ps1 -PortableDir D:\Portable\brave-portable -WaitForExit
 
 Runs against an explicit portable root and waits until that copy of Brave exits
@@ -85,6 +95,7 @@ param(
     [switch]$Force,
     [switch]$Launch,
     [switch]$DryRun,
+    [switch]$RestoreLatestBackup,
     [switch]$WaitForExit,
     [switch]$AllowMissingHash,
     [switch]$NoLog,
@@ -169,8 +180,10 @@ function ConvertTo-BraveVersion {
     return $Version.Trim()
 }
 
-function Get-InstalledBraveVersion {
-    $braveExe = Join-Path $AppDir 'brave.exe'
+function Get-BraveVersionFromAppDir {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $braveExe = Join-Path $Path 'brave.exe'
     if (-not (Test-Path -LiteralPath $braveExe -PathType Leaf)) {
         return [pscustomobject]@{
             Raw = $null
@@ -183,6 +196,10 @@ function Get-InstalledBraveVersion {
         Raw = $raw
         Normalized = ConvertTo-BraveVersion $raw
     }
+}
+
+function Get-InstalledBraveVersion {
+    Get-BraveVersionFromAppDir -Path $AppDir
 }
 
 function Get-PortableBraveProcess {
@@ -432,6 +449,92 @@ function Install-AppPayload {
     return $backupApp
 }
 
+function Get-LatestAppBackup {
+    if (-not (Test-Path -LiteralPath $BackupRoot -PathType Container)) {
+        throw "No app payload backups were found. Missing backup folder: $BackupRoot"
+    }
+
+    $culture = [System.Globalization.CultureInfo]::InvariantCulture
+    $styles = [System.Globalization.DateTimeStyles]::None
+    $backups = @(Get-ChildItem -LiteralPath $BackupRoot -Directory -Filter 'app-*' -ErrorAction SilentlyContinue |
+        ForEach-Object {
+            $timestamp = $_.LastWriteTime
+            $match = [regex]::Match($_.Name, '(\d{8}-\d{6})$')
+            if ($match.Success) {
+                $parsedTimestamp = [DateTime]::MinValue
+                if ([DateTime]::TryParseExact($match.Groups[1].Value, 'yyyyMMdd-HHmmss', $culture, $styles, [ref]$parsedTimestamp)) {
+                    $timestamp = $parsedTimestamp
+                }
+            }
+
+            [pscustomobject]@{
+                Name = $_.Name
+                FullName = $_.FullName
+                Timestamp = $timestamp
+            }
+        })
+
+    if ($backups.Count -eq 0) {
+        throw "No app payload backups were found in: $BackupRoot"
+    }
+
+    $latest = $backups |
+        Sort-Object -Property @{ Expression = { $_.Timestamp }; Descending = $true }, @{ Expression = { $_.Name }; Descending = $true } |
+        Select-Object -First 1
+
+    return $latest.FullName
+}
+
+function Restore-AppPayloadBackup {
+    param([Parameter(Mandatory = $true)][string]$BackupApp)
+
+    $backupVersion = Get-BraveVersionFromAppDir -Path $BackupApp
+    if (-not $backupVersion.Raw) {
+        throw "Latest backup does not look like a Brave app payload. Missing: $(Join-Path $BackupApp 'brave.exe')"
+    }
+
+    $currentVersion = Get-InstalledBraveVersion
+    $safeCurrent = if ($currentVersion.Normalized) { $currentVersion.Normalized } else { 'unknown' }
+    $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+    $currentBackup = Join-Path $BackupRoot "app-$safeCurrent-before-restore-$timestamp"
+
+    Write-Log "Selected app payload backup: $BackupApp (Brave $($backupVersion.Normalized))"
+
+    if ($DryRun) {
+        if ($NoLog) {
+            Write-Log 'Dry run only. No app payload, backup folders, profile files, or updater log were changed.'
+        }
+        else {
+            Write-Log 'Dry run only. No app payload, backup folders, or profile files were changed; only the updater log may have been appended.'
+        }
+        Write-Log "Would move current app payload to: $currentBackup"
+        Write-Log "Would restore backup into: $AppDir"
+        Write-Log "Would leave profile data untouched: $DataDir"
+        return
+    }
+
+    Write-Log "Backing up current app payload to $currentBackup"
+    Move-Item -LiteralPath $AppDir -Destination $currentBackup
+
+    try {
+        Write-Log "Restoring backup into $AppDir"
+        Move-Item -LiteralPath $BackupApp -Destination $AppDir
+    }
+    catch {
+        Write-Log 'Restore failed after current app backup; restoring the app payload that was just moved aside.'
+        if (Test-Path -LiteralPath $AppDir) {
+            Rename-Item -LiteralPath $AppDir -NewName ("failed-restore-app-$timestamp")
+        }
+        Move-Item -LiteralPath $currentBackup -Destination $AppDir
+        throw
+    }
+
+    $restored = Get-InstalledBraveVersion
+    Write-Log "Restore complete. Installed brave.exe version: $($restored.Raw) (Brave $($restored.Normalized))"
+    Write-Log "Previous app payload backup: $currentBackup"
+    Write-Log "Profile data was not modified by this updater: $DataDir"
+}
+
 function Start-BravePortable {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param()
@@ -452,6 +555,15 @@ try {
     }
     else {
         Write-Log 'Current installed brave.exe version: not found'
+    }
+
+    if ($RestoreLatestBackup) {
+        $backupApp = Get-LatestAppBackup
+        Restore-AppPayloadBackup -BackupApp $backupApp
+        if ($Launch -and -not $DryRun) {
+            Start-BravePortable
+        }
+        exit 0
     }
 
     $release = Resolve-BraveRelease $Edition

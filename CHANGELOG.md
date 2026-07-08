@@ -2,6 +2,17 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.17 - 2026-07-08
+
+Install/update-safety release.
+
+- Added `-RestoreLatestBackup` to restore the newest saved `app/` payload from
+  `update-backups/` without touching `data/`.
+- Supported `-DryRun -NoLog` for restore previews so users can see exactly what
+  would move before changing the live portable folder.
+- Updated Explorer wrapper completion text to cover update, restore, and
+  already-current outcomes.
+
 ## v0.1.16 - 2026-07-08
 
 Operator-usability release.
