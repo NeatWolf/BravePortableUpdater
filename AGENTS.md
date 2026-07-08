@@ -51,14 +51,15 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - updated public-repo security reporting and hash-required security boundary.
 - 2026-07-08: Maintenance evidence - enabled and verified GitHub private vulnerability reporting for the public repo.
 - 2026-07-08: PowerShell help - added a screen-only dry-run example for already-current installs.
+- 2026-07-08: Maintenance evidence - aligned contributor live verification with the no-log dry-run command.
 
 ## Working Rules
 
 - Do not modify or delete a user's live `data/` profile directory.
 - Do not run an updater path that can change the live install unless the current
   task requires it; prefer `-DryRun` for verification.
-- On an already-current install, use `-Force -DryRun` to exercise dry-run action
-  messages without downloading or replacing `app/`.
+- On an already-current install, use `-Force -DryRun -NoLog` to exercise dry-run
+  action messages without downloading, replacing `app/`, or appending the log.
 - If Brave is running, treat that as a successful safety check, not a failure to
   work around.
 - Copy script changes into `D:\Portable\brave-portable` when the change affects

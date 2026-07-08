@@ -39,7 +39,7 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Modul
 ```
 
 ```bat
-D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun
+D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog
 ```
 
 If a change affects user-facing script behavior, copy the updated script files

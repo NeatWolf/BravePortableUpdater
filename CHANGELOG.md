@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.12 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Updated contributor verification to use the current screen-only live check:
+  `Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog`.
+- Aligned agent operating notes with the same no-log dry-run command.
+- Kept behavior unchanged and release packaging limited to the two updater
+  files.
+
 ## v0.1.11 - 2026-07-08
 
 PowerShell-help release.
