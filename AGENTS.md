@@ -44,6 +44,7 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - add code of conduct, issue template, and PR template.
 - 2026-07-08: Maintenance evidence - documented repeatable verification commands and live dry-run expectations.
 - 2026-07-08: Operator usability - clarified dry-run output and docs so expected log appends are not confused with app/profile changes.
+- 2026-07-08: Repository discoverability - clarified the beginner download path and expected portable folder shape.
 
 ## Working Rules
 

@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.5 - 2026-07-08
+
+Repository-discoverability release.
+
+- Clarified the beginner download path: get exactly the two updater files from
+  a release and place them beside `brave-portable.exe`.
+- Added a small folder-shape example for average Windows users.
+- Kept the release package limited to the two updater files.
+
 ## v0.1.4 - 2026-07-08
 
 Operator-usability release.

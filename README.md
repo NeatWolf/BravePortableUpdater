@@ -22,12 +22,23 @@ Brave's own GitHub release zips.
 
 ## Quick Start
 
-Copy these two files into the same folder as `brave-portable.exe`:
+From the latest GitHub release, download exactly these two files:
 
 - `Update-BravePortable.cmd`
 - `Update-BravePortable.ps1`
 
-Run:
+Put both files in the same folder as `brave-portable.exe`. A typical folder
+looks like this before you run the updater:
+
+```text
+brave-portable.exe
+app\
+data\
+Update-BravePortable.cmd
+Update-BravePortable.ps1
+```
+
+Then double-click `Update-BravePortable.cmd`, or run:
 
 ```bat
 Update-BravePortable.cmd
@@ -36,7 +47,7 @@ Update-BravePortable.cmd
 The default channel is stable.
 Double-clicking `Update-BravePortable.cmd` from Explorer is supported. If the
 update finishes or does not complete, the window stays open so the result can
-be read.
+be read. If Brave is open, close it and run the updater again.
 
 ## Examples
 
