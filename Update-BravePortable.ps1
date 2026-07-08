@@ -275,12 +275,12 @@ function Resolve-BraveRelease {
     else {
         $tag = "v$targetVersion"
         $githubReleaseUri = "https://api.github.com/repos/brave/brave-browser/releases/tags/$tag"
-        Write-Log "Warning: Brave versions JSON does not list $channel $targetVersion yet; checking GitHub release $tag directly..."
+        Write-Log "Warning: Brave has announced $targetVersion, but its detailed release index has not caught up yet. Checking Brave's official GitHub release $tag instead..."
         try {
             $githubRelease = Invoke-BraveVersionsRequest $githubReleaseUri
         }
         catch {
-            throw "Brave versions JSON did not contain channel '$channel' version '$targetVersion', and GitHub release lookup failed for $tag. $($_.Exception.Message)"
+            throw "Brave has announced $targetVersion, but its detailed release index is not ready yet and the official GitHub release $tag could not be checked. Try again later, or check your internet connection. Technical detail: $($_.Exception.Message)"
         }
 
         $published = $githubRelease.published_at
@@ -290,20 +290,20 @@ function Resolve-BraveRelease {
     $assetName = "brave-v$targetVersion-win32-x64.zip"
     $asset = $assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
     if (-not $asset) {
-        throw "Release $tag does not contain expected asset '$assetName'."
+        throw "Brave release $tag was found, but it does not include the expected Windows x64 zip ($assetName). This can happen while a release is still publishing; try again later."
     }
 
     $shaAsset = $assets | Where-Object { $_.name -eq "$assetName.sha256" } | Select-Object -First 1
     $assetUrl = Get-ReleaseAssetDownloadUrl $asset
     if (-not $assetUrl) {
-        throw "Release $tag asset '$assetName' did not include a download URL."
+        throw "Brave release $tag lists $assetName, but no download link was provided. Try again later; the release may still be publishing."
     }
 
     $sha256Url = $null
     if ($shaAsset) {
         $sha256Url = Get-ReleaseAssetDownloadUrl $shaAsset
         if (-not $sha256Url) {
-            throw "Release $tag asset '$assetName.sha256' did not include a download URL."
+            throw "Brave release $tag lists $assetName.sha256, but no checksum download link was provided. Try again later; the release may still be publishing."
         }
     }
 

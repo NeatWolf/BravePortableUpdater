@@ -2,6 +2,15 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.16 - 2026-07-08
+
+Operator-usability release.
+
+- Reworded Brave release feed-skew messages so non-technical users see what is
+  happening: Brave announced a build before its detailed release index caught
+  up, so the updater checks Brave's official GitHub release directly.
+- Kept updater behavior unchanged and preserved the existing SHA256 requirement.
+
 ## v0.1.15 - 2026-07-08
 
 Resolver reliability release.
