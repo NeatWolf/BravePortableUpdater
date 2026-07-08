@@ -29,8 +29,8 @@ Launch brave-portable.exe after a successful update or current-version check.
 
 .PARAMETER DryRun
 Resolve versions and report intended actions without downloading or changing
-the Brave app payload or portable profile files. The updater still appends
-status lines to its log.
+the Brave app payload or portable profile files. Unless -NoLog is set, the
+updater still appends status lines to its log.
 
 .PARAMETER WaitForExit
 Wait for Brave Portable processes from this directory to close instead of
@@ -39,6 +39,10 @@ failing immediately.
 .PARAMETER AllowMissingHash
 Continue when Brave does not publish a SHA256 file for the selected zip. Without
 this switch, the updater stops before downloading that asset.
+
+.PARAMETER NoLog
+Print status to the console without appending brave-portable-update.log.
+Intended for read-only verification passes; normal runs should keep logs on.
 
 .PARAMETER NoPause
 Accepted for parity with Update-BravePortable.cmd. The PowerShell script does
@@ -77,6 +81,7 @@ param(
     [switch]$DryRun,
     [switch]$WaitForExit,
     [switch]$AllowMissingHash,
+    [switch]$NoLog,
     [switch]$NoPause
 )
 
@@ -86,6 +91,10 @@ $ProgressPreference = 'SilentlyContinue'
 
 if ($NoPause) {
     Write-Verbose 'NoPause is handled by Update-BravePortable.cmd; this PowerShell script never pauses.'
+}
+
+if ($NoLog) {
+    Write-Verbose 'NoLog is set; status will be printed but not appended to brave-portable-update.log.'
 }
 
 if ([string]::IsNullOrWhiteSpace($PortableDir)) {
@@ -120,7 +129,9 @@ function Write-Log {
 
     $line = '[{0}] {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Message
     Write-Information $Message -InformationAction Continue
-    Add-Content -LiteralPath $LogPath -Value $line -Encoding UTF8
+    if (-not $NoLog) {
+        Add-Content -LiteralPath $LogPath -Value $line -Encoding UTF8
+    }
 }
 
 function Assert-PortappsBraveRoot {
@@ -129,9 +140,6 @@ function Assert-PortappsBraveRoot {
     }
     if (-not (Test-Path -LiteralPath $AppDir -PathType Container)) {
         throw "This does not look like a Portapps Brave root. Missing: $AppDir"
-    }
-    if (-not (Test-Path -LiteralPath $DataDir -PathType Container)) {
-        Write-Log "Warning: data directory is missing. This updater will not create or delete profile data."
     }
 }
 
@@ -408,12 +416,18 @@ try {
     }
 
     if ($DryRun) {
-        Write-Log 'Dry run only. No app payload or profile files were changed; only the updater log may have been appended.'
-        Write-Log "Would download: $($release.AssetUrl)"
+        if ($NoLog) {
+            Write-Log 'Dry run only. No app payload, profile files, or updater log were changed.'
+        }
+        else {
+            Write-Log 'Dry run only. No app payload or profile files were changed; only the updater log may have been appended.'
+        }
         if ($release.Sha256Url) {
+            Write-Log "Would download: $($release.AssetUrl)"
             Write-Log "Would verify SHA256: $($release.Sha256Url)"
         }
         elseif ($AllowMissingHash) {
+            Write-Log "Would download: $($release.AssetUrl)"
             Write-Log 'Would continue without Brave SHA256 because -AllowMissingHash was set; staged brave.exe version verification would still run.'
         }
         else {
@@ -455,7 +469,9 @@ catch {
     Write-Information 'ERROR:' -InformationAction Continue
     Write-Information $message -InformationAction Continue
     try {
-        Add-Content -LiteralPath $LogPath -Value ('[{0}] ERROR: {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message) -Encoding UTF8
+        if (-not $NoLog) {
+            Add-Content -LiteralPath $LogPath -Value ('[{0}] ERROR: {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message) -Encoding UTF8
+        }
     }
     catch {
         # Best-effort logging only; preserve the original failure as the process result.

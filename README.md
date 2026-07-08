@@ -64,7 +64,12 @@ Update-BravePortable.cmd -DryRun
 ```
 
 Dry runs still append status lines to `brave-portable-update.log`, but they do
-not download, replace `app/`, or modify `data/`.
+not download, replace `app/`, or modify `data/`. For screen-only verification
+that does not append the log, use:
+
+```bat
+Update-BravePortable.cmd -DryRun -Force -NoLog
+```
 
 Update stable and launch Brave afterward:
 
@@ -114,6 +119,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Update-BravePortable.p
 - Does not run Brave's installer.
 - Does not include or redistribute Brave binaries.
 - Does not include or redistribute Portapps binaries.
+- Does not inspect or require `data/`.
 
 ## Safety Checks
 
@@ -136,6 +142,8 @@ Logs are appended to:
 ```text
 brave-portable-update.log
 ```
+
+Use `-NoLog` only when you want console output without appending that log.
 
 The `.cmd` launcher prints the full log path before it pauses, so Explorer
 launches still leave both an on-screen result and a persistent log.
@@ -166,15 +174,16 @@ git status --short --branch
 git ls-files -- '*.cmd' '*.ps1'
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; Write-Output ''PowerShell parse OK'''
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Import-Module PSScriptAnalyzer -Force; `$results = Invoke-ScriptAnalyzer -Path .\Update-BravePortable.ps1 -Severity Information,Warning,Error; if (`$results) { `$results | Format-Table -AutoSize; exit 1 } else { Write-Output 'PSScriptAnalyzer passed with no findings.' }"
-cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force"
+cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog"
 ```
 
 The dry run must report what would happen without changing the app payload or
-profile files. Appending status lines to `brave-portable-update.log` is
-expected. Use `-Force` with `-DryRun` on an already-current install to exercise
-the dry-run action lines without downloading or replacing `app/`. If the live
-portable copy of Brave is running, process detection is a valid safety result:
-close Brave or rerun with `-WaitForExit` only when an actual update is intended.
+profile files. Use `-Force` with `-DryRun` on an already-current install to
+exercise the dry-run action lines without downloading or replacing `app/`. Add
+`-NoLog` when the check must also avoid appending `brave-portable-update.log`.
+If the live portable copy of Brave is running, process detection is a valid
+safety result: close Brave or rerun with `-WaitForExit` only when an actual
+update is intended.
 The only release assets are `Update-BravePortable.cmd` and
 `Update-BravePortable.ps1`.
 

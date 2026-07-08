@@ -2,6 +2,31 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.8 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Added `-NoLog` so dry-run verification can print to the console without
+  appending `brave-portable-update.log`.
+- Removed the optional `data/` existence probe from root preflight; the updater
+  does not inspect or require profile data.
+- Updated maintainer verification to use `-DryRun -Force -NoLog`.
+
+Verification evidence:
+
+- Script boundary: `Update-BravePortable.cmd` and `Update-BravePortable.ps1`
+  are the only tracked updater scripts.
+- Parser: `PowerShell parse OK`.
+- PSScriptAnalyzer: `PSScriptAnalyzer passed with no findings.`
+- Live no-log dry run: `Update-BravePortable.cmd -NoPause -DryRun -Force
+  -NoLog` exited 0, reported no app/profile/log changes, and left
+  `brave-portable-update.log` length and timestamp unchanged.
+- Release asset hashes:
+  - `Update-BravePortable.cmd`:
+    `2209A4FE6760139E6E81A71F74C4F5D765BEA5528507CAD0868FC76167F858EA`
+  - `Update-BravePortable.ps1`:
+    `C42174A2514DEE9C28B2B47E24E4B996B21E8EFF9F1B697D45BD0F5AD0479006`
+
 ## v0.1.7 - 2026-07-08
 
 Repository-discoverability release.

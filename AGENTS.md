@@ -47,6 +47,7 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - clarified the beginner download path and expected portable folder shape.
 - 2026-07-08: Install/update safety - require Brave SHA256 assets by default and add explicit missing-hash override messaging.
 - 2026-07-08: Repository discoverability - made the GitHub repo public and documented public release downloads.
+- 2026-07-08: Maintenance evidence - added no-log dry-run verification and removed the data directory preflight probe.
 
 ## Working Rules
 
