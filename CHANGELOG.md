@@ -2,6 +2,16 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## v0.1.10 - 2026-07-08
+
+Maintenance-evidence release.
+
+- Enabled GitHub private vulnerability reporting for the public repository.
+- Replaced conditional security-reporting wording with the concrete private
+  vulnerability report URL.
+- Documented the safe fallback for users who cannot access the private-reporting
+  page without exposing details publicly.
+
 ## v0.1.9 - 2026-07-08
 
 Repository-discoverability release.

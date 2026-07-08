@@ -6,9 +6,12 @@ Only the latest `main` branch and the latest GitHub release are supported.
 
 ## Reporting A Vulnerability
 
-This is a small public utility repo. Report security issues through GitHub's
-private vulnerability reporting when available, or contact the repository owner
-privately before opening a public issue when the issue could expose:
+This is a small public utility repo. Report security-sensitive issues through
+GitHub private vulnerability reporting for this repository:
+
+https://github.com/NeatWolf/BravePortableUpdater/security/advisories/new
+
+Do not open a public issue first when the issue could expose:
 
 - profile data loss risks
 - unsafe update or rollback behavior
@@ -17,7 +20,9 @@ privately before opening a public issue when the issue could expose:
 - accidental packaging of Brave, Portapps, profile data, logs, or backups
 
 Use a public GitHub issue only for non-sensitive defects that do not expose
-private data or a practical exploit path.
+private data or a practical exploit path. If the private-reporting page is not
+available to you, open a minimal public issue asking for private contact without
+including exploit details, logs, profile data, or file contents.
 
 Include:
 

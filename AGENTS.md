@@ -49,6 +49,7 @@ Current cycle history:
 - 2026-07-08: Repository discoverability - made the GitHub repo public and documented public release downloads.
 - 2026-07-08: Maintenance evidence - added no-log dry-run verification and removed the data directory preflight probe.
 - 2026-07-08: Repository discoverability - updated public-repo security reporting and hash-required security boundary.
+- 2026-07-08: Maintenance evidence - enabled and verified GitHub private vulnerability reporting for the public repo.
 
 ## Working Rules
 
