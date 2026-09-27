@@ -705,6 +705,20 @@ function Start-BravePortable {
 
 $updateLock = $null
 try {
+    try {
+        # A launcher can inherit PowerShell 7 module paths while running Windows PowerShell 5.1.
+        # Use this host's bundled modules instead of whichever version appears first in PSModulePath.
+        foreach ($moduleName in 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Archive', 'CimCmdlets') {
+            $modulePath = [IO.Path]::Combine($PSHOME, 'Modules', $moduleName, "$moduleName.psd1")
+            Import-Module -Name $modulePath -Scope Local -Force -ErrorAction Stop
+        }
+        foreach ($requiredCommand in 'Get-FileHash', 'Expand-Archive', 'Get-CimInstance', 'Invoke-WebRequest', 'Invoke-RestMethod') {
+            Get-Command -Name $requiredCommand -CommandType Cmdlet, Function -ErrorAction Stop | Out-Null
+        }
+    }
+    catch {
+        throw "Windows PowerShell could not load the built-in tools needed to update Brave. No download or app replacement has started. Restart Windows and run Update-BravePortable.cmd again. If it still fails, share this log with the maintainer. Technical detail: $($_.Exception.Message)"
+    }
     Assert-PortappsBraveRoot -AllowMissingApp:$RestoreLatestBackup
     if (-not $DryRun) {
         $updateLock = Open-UpdaterLock

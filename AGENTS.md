@@ -72,6 +72,7 @@ Current cycle history:
 - 2026-07-08: Release packaging - made the README release asset list match the published zip, scripts, and checksum manifest.
 - 2026-07-08: Maintenance evidence - documented post-release remote/tag/asset verification checks.
 - 2026-09-27: Install/update safety - repaired rollback logging, missing-app recovery, process-query failures and pre-swap checks, dry-run launch suppression, and downgrade consent; verified isolated failure cases and live no-log preview.
+- 2026-09-27: Operator usability - resolve built-in modules from PSHOME and validate commands before network work; reproduced inherited PowerShell 7 module paths loading Utility 7.0 under Windows PowerShell 5.1, then verified hash/extraction and the normal launcher after repair.
 
 Independent judgement for this pass (before follow-up corrections): repository
 discoverability 9/10, operator usability 7/10, PowerShell help 8/10, code quality

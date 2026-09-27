@@ -4,6 +4,12 @@ All notable user-facing changes for this repository are recorded here.
 
 ## Unreleased
 
+- Load and check standard PowerShell modules at startup so ordinary launches do
+  not depend on a manual module-import workaround. Explain missing prerequisites
+  before downloading anything.
+  Resolve modules from the running host's installation to handle inherited
+  PowerShell 7 module paths in Windows PowerShell 5.1.
+
 - Made log writes best-effort so logging failures cannot prevent rollback.
 - Allowed backup restore when an interrupted update left `app/` missing.
 - Stopped on failed or inconclusive process queries and rechecked processes

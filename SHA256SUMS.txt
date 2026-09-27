@@ -1,2 +1,2 @@
 7056d20ad909f38093ee18223b70e79a08629e417dfbad70c9d552fee3390eac  Update-BravePortable.cmd
-f241ad4a6c6d16f8b79e71b3a90c0d340ac5c0d707d3607827efa53badf51227  Update-BravePortable.ps1
+8e53ee82ba7f7ac395aa7497374055ba270c9a43ede2a5cf8880e0078098d5a5  Update-BravePortable.ps1

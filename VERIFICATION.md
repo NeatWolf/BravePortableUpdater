@@ -315,7 +315,48 @@ Assert-Test ($result -ne 0) 'Missing script help incorrectly reported success'
 
 ```
 
-### Packaging
+### Startup Dependency Checks
+
+Run this separate block from the repository root in Windows PowerShell 5.1.
+It disables module autoload after loading filesystem commands, then executes
+the updater's actual startup preflight. It verifies real SHA256 and archive
+operations after a helper returns, plus the prerequisite-failure message.
+Expected: two PASS lines. The tiny fixture stays in `%TEMP%` for inspection.
+
+```powershell
+& {
+$ErrorActionPreference = 'Stop'
+$sourcePath = Join-Path (Get-Location) 'Update-BravePortable.ps1'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile($sourcePath, [ref]$null, [ref]$null)
+$PSModuleAutoLoadingPreference = 'None'
+$startup = [scriptblock]::Create($ast.EndBlock.Statements[-1].Body.Statements[0].Extent.Text)
+. $startup
+$fixture = Join-Path $env:TEMP ('brave-startup-test-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $fixture | Out-Null
+$emptyFile = Join-Path $fixture 'empty.txt'
+New-Item -ItemType File -Path $emptyFile | Out-Null
+& { Get-Date | Out-Null; Write-Information 'Testing nested helper return' -InformationAction Continue }
+$hash = (Get-FileHash -LiteralPath $emptyFile -Algorithm SHA256).Hash
+if ($hash -ne 'E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855') { throw 'SHA256 verification failed' }
+Compress-Archive -LiteralPath $emptyFile -DestinationPath "$fixture\sample.zip"
+Expand-Archive -LiteralPath "$fixture\sample.zip" -DestinationPath "$fixture\expanded"
+if (-not (Test-Path -LiteralPath "$fixture\expanded\empty.txt")) { throw 'Extraction failed' }
+'PASS: startup supports hash and extraction with autoload disabled'
+& {
+    function Import-Module { [CmdletBinding()] param($Name, $Scope, [switch]$Force) throw 'Injected module failure' }
+    $reason = ''
+    try { . $startup } catch { $reason = $_.Exception.Message }
+    if ($reason -notlike '*No download or app replacement has started*' -or $reason -notlike '*Injected module failure*') {
+        throw "Missing actionable prerequisite error: $reason"
+    }
+    'PASS: missing prerequisites have an actionable early error'
+}
+"Fixture retained for inspection: $fixture"
+
+}
+```
+
+### Packaging Checks
 
 Before creating a release:
 
