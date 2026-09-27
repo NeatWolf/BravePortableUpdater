@@ -1,5 +1,6 @@
 # Local updater runtime output
 brave-portable-update.log
+.brave-portable-update.lock
 update-backups/
 *.zip
 *.zip.sha256

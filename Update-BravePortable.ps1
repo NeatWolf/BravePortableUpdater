@@ -24,6 +24,10 @@ app. When omitted, the script uses its own directory.
 .PARAMETER Force
 Reinstall the currently resolved Brave version even if it is already installed.
 
+.PARAMETER AllowDowngrade
+Explicitly allow installing an older Brave version. Older browsers may not be
+compatible with profiles opened by newer versions. Force alone does not allow this.
+
 .PARAMETER Launch
 Launch brave-portable.exe after a successful update or current-version check.
 
@@ -106,6 +110,7 @@ param(
     [string]$PortableDir = '',
 
     [switch]$Force,
+    [switch]$AllowDowngrade,
     [switch]$Launch,
     [switch]$DryRun,
     [switch]$RestoreLatestBackup,
@@ -158,13 +163,19 @@ $DownloadRequestTimeoutSec = 300
 $InstallFreeSpaceMarginBytes = 256MB
 $BraveRequestHeaders = @{ 'User-Agent' = 'BravePortableUpdater/1.0' }
 
-function Write-Log {
+function Write-UpdaterLog {
     param([Parameter(Mandatory = $true)][string]$Message)
 
     $line = '[{0}] {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Message
     Write-Information $Message -InformationAction Continue
     if (-not $NoLog) {
-        Add-Content -LiteralPath $LogPath -Value $line -Encoding UTF8
+        try {
+            Add-Content -LiteralPath $LogPath -Value $line -Encoding UTF8
+        }
+        catch {
+            # A diagnostic failure must never interrupt installation or rollback.
+            Write-Warning "Could not append to log '$LogPath': $($_.Exception.Message). Read the console output for this run." -WarningAction Continue
+        }
     }
 }
 
@@ -175,19 +186,35 @@ function Write-DryRunNoChangeMessage {
     )
 
     if ($NoLog) {
-        Write-Log "Dry run only. No $NoLogItems, or updater log were changed."
+        Write-UpdaterLog "Dry run only. No $NoLogItems, or updater log were changed."
         return
     }
 
-    Write-Log "Dry run only. No $LoggedItems were changed; only the updater log may have been appended."
+    Write-UpdaterLog "Dry run only. No $LoggedItems were changed; only the updater log may have been appended."
 }
 
 function Assert-PortappsBraveRoot {
+    param([switch]$AllowMissingApp)
+
     if (-not (Test-Path -LiteralPath $PortableExe -PathType Leaf)) {
         throw "This does not look like a Portapps Brave root. Missing: $PortableExe"
     }
-    if (-not (Test-Path -LiteralPath $AppDir -PathType Container)) {
+    if (Test-Path -LiteralPath $AppDir -PathType Leaf) {
+        throw "Expected an app folder, but found a file: $AppDir"
+    }
+    if (-not $AllowMissingApp -and -not (Test-Path -LiteralPath $AppDir -PathType Container)) {
         throw "This does not look like a Portapps Brave root. Missing: $AppDir"
+    }
+}
+
+function Open-UpdaterLock {
+    $lockPath = Join-Path $PortableDir '.brave-portable-update.lock'
+    try {
+        # Keep the file after closing: deleting it would race the next owner.
+        return [IO.File]::Open($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+    }
+    catch {
+        throw "Could not reserve this portable folder for updating. Another updater may be running, or the folder may not be writable. Close other updater windows and retry. Lock: $lockPath. Technical detail: $($_.Exception.Message)"
     }
 }
 
@@ -285,7 +312,7 @@ function Assert-FreeSpaceForAppInstall {
         throw "Not enough free space on $($portableSpace.Root) to install the staged app payload. Available: $(Format-ByteSize $portableSpace.Available). Required: $(Format-ByteSize $requiredBytes). Free some space and run the updater again. Profile data was not modified: $DataDir"
     }
 
-    Write-Log "Free space check passed on $($portableSpace.Root): $(Format-ByteSize $portableSpace.Available) available."
+    Write-UpdaterLog "Free space check passed on $($portableSpace.Root): $(Format-ByteSize $portableSpace.Available) available."
 }
 
 function Get-PortableBraveProcess {
@@ -293,7 +320,16 @@ function Get-PortableBraveProcess {
     $names = @('brave.exe', 'brave-portable.exe', 'chrome_proxy.exe')
     $filter = ($names | ForEach-Object { "Name='$_'" }) -join ' OR '
 
-    Get-CimInstance Win32_Process -Filter $filter -ErrorAction SilentlyContinue |
+    try {
+        $processes = @(Get-CimInstance Win32_Process -Filter $filter -ErrorAction Stop)
+    }
+    catch {
+        throw "Could not check whether Brave Portable is running. No app files were moved. Close Brave and retry; if this persists, restart Windows. Technical detail: $($_.Exception.Message)"
+    }
+    if (@($processes | Where-Object { -not $_.ExecutablePath -and -not $_.CommandLine }).Count -gt 0) {
+        throw 'Could not identify the folder of a running Brave process. Close all Brave instances and retry. No app files were moved.'
+    }
+    $processes |
         Where-Object {
             ($_.ExecutablePath -and $_.ExecutablePath.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) -or
             ($_.CommandLine -and $_.CommandLine.IndexOf($PortableDir, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
@@ -324,7 +360,7 @@ Or run Update-BravePortable.cmd -WaitForExit to leave this updater waiting until
 "@
     }
 
-    Write-Log 'Portable Brave is running; waiting for it to exit...'
+    Write-UpdaterLog 'Portable Brave is running; waiting for it to exit...'
     while (@(Get-PortableBraveProcess).Count -gt 0) {
         Start-Sleep -Seconds 2
     }
@@ -379,7 +415,7 @@ function Resolve-BraveRelease {
     $versionUri = "https://versions.brave.com/latest/$channel-windows-x64.version"
     $versionsUri = 'https://versions.brave.com/latest/brave-versions.json'
 
-    Write-Log "Resolving latest public $channel build for Windows x64..."
+    Write-UpdaterLog "Resolving latest public $channel build for Windows x64..."
     $targetVersion = ((Invoke-BraveVersionsRequest $versionUri) | Out-String).Trim()
     if (-not $targetVersion) {
         throw "Could not resolve latest $channel version from $versionUri"
@@ -397,7 +433,7 @@ function Resolve-BraveRelease {
     else {
         $tag = "v$targetVersion"
         $githubReleaseUri = "https://api.github.com/repos/brave/brave-browser/releases/tags/$tag"
-        Write-Log "Warning: Brave has announced $targetVersion, but its detailed release index has not caught up yet. Checking Brave's official GitHub release $tag instead..."
+        Write-UpdaterLog "Warning: Brave has announced $targetVersion, but its detailed release index has not caught up yet. Checking Brave's official GitHub release $tag instead..."
         try {
             $githubRelease = Invoke-BraveVersionsRequest $githubReleaseUri
         }
@@ -455,10 +491,10 @@ function Save-ReleaseAsset {
             throw "No SHA256 asset was published for $($Release.AssetName). The updater stopped before downloading or installing anything. Rerun with -AllowMissingHash only if you accept version-check-only verification for this release."
         }
 
-        Write-Log 'Warning: no SHA256 asset found for this release; -AllowMissingHash was set, so staged brave.exe version verification will be used after extraction.'
+        Write-UpdaterLog 'Warning: no SHA256 asset found for this release; -AllowMissingHash was set, so staged brave.exe version verification will be used after extraction.'
     }
 
-    Write-Log "Downloading $($Release.AssetName)..."
+    Write-UpdaterLog "Downloading $($Release.AssetName)..."
     Save-BraveDownload -Uri $Release.AssetUrl -OutFile $zipPath -Description $Release.AssetName
 
     if ($Release.Sha256Url) {
@@ -476,7 +512,7 @@ function Save-ReleaseAsset {
             throw "SHA256 mismatch for $zipPath. Expected $expected, got $actual."
         }
 
-        Write-Log 'Verified downloaded zip SHA256.'
+        Write-UpdaterLog 'Verified downloaded zip SHA256.'
     }
 
     return $zipPath
@@ -493,7 +529,7 @@ function Expand-BraveZip {
     New-Item -ItemType Directory -Path $ExtractDir -Force | Out-Null
     New-Item -ItemType Directory -Path $NewAppDir -Force | Out-Null
 
-    Write-Log 'Extracting downloaded zip into a staging folder...'
+    Write-UpdaterLog 'Extracting downloaded zip into a staging folder...'
     Expand-Archive -LiteralPath $ZipPath -DestinationPath $ExtractDir -Force
 
     $braveCandidates = @(Get-ChildItem -LiteralPath $ExtractDir -Recurse -Force -File -Filter 'brave.exe' |
@@ -519,7 +555,7 @@ function Expand-BraveZip {
         throw "Staged brave.exe version '$fileVersion' normalized to '$normalized', expected '$ExpectedVersion'."
     }
 
-    Write-Log "Verified staged brave.exe version $fileVersion."
+    Write-UpdaterLog "Verified staged brave.exe version $fileVersion."
 }
 
 function Install-AppPayload {
@@ -536,15 +572,16 @@ function Install-AppPayload {
     $safeCurrent = if ($CurrentVersion) { $CurrentVersion } else { 'unknown' }
     $backupApp = Join-Path $BackupRoot "app-$safeCurrent-$timestamp"
 
-    Write-Log "Backing up current app payload to $backupApp"
+    Write-UpdaterLog "Backing up current app payload to $backupApp"
+    Wait-ForPortableBraveExit
     Move-Item -LiteralPath $AppDir -Destination $backupApp
 
     try {
-        Write-Log "Installing Brave $TargetVersion into $AppDir"
+        Write-UpdaterLog "Installing Brave $TargetVersion into $AppDir"
         Move-Item -LiteralPath $NewAppDir -Destination $AppDir
     }
     catch {
-        Write-Log 'Install failed after backup; restoring previous app payload.'
+        Write-UpdaterLog 'Install failed after backup; restoring previous app payload.'
         if (Test-Path -LiteralPath $AppDir) {
             Rename-Item -LiteralPath $AppDir -NewName ("failed-app-$timestamp")
         }
@@ -603,39 +640,57 @@ function Restore-AppPayloadBackup {
     $safeCurrent = if ($currentVersion.Normalized) { $currentVersion.Normalized } else { 'unknown' }
     $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $currentBackup = Join-Path $BackupRoot "app-$safeCurrent-before-restore-$timestamp"
+    $hasCurrentApp = Test-Path -LiteralPath $AppDir -PathType Container
 
-    Write-Log "Selected app payload backup: $BackupApp (Brave $($backupVersion.Normalized))"
+    Write-UpdaterLog "Selected app payload backup: $BackupApp (Brave $($backupVersion.Normalized))"
 
     if ($DryRun) {
         Write-DryRunNoChangeMessage `
             -NoLogItems 'app payload, backup folders, profile files' `
             -LoggedItems 'app payload, backup folders, or profile files'
-        Write-Log "Would move current app payload to: $currentBackup"
-        Write-Log "Would restore backup into: $AppDir"
-        Write-Log "Would leave profile data untouched: $DataDir"
+        if ($hasCurrentApp) {
+            Write-UpdaterLog "Would move current app payload to: $currentBackup"
+        }
+        else {
+            Write-UpdaterLog 'Current app folder is missing; would recover it from the selected backup.'
+        }
+        Write-UpdaterLog "Would restore backup into: $AppDir"
+        Write-UpdaterLog "Would leave profile data untouched: $DataDir"
         return
     }
 
-    Write-Log "Backing up current app payload to $currentBackup"
-    Move-Item -LiteralPath $AppDir -Destination $currentBackup
+    Wait-ForPortableBraveExit
+    if ($hasCurrentApp) {
+        Write-UpdaterLog "Backing up current app payload to $currentBackup"
+        Move-Item -LiteralPath $AppDir -Destination $currentBackup
+    }
 
     try {
-        Write-Log "Restoring backup into $AppDir"
+        Write-UpdaterLog "Restoring backup into $AppDir"
         Move-Item -LiteralPath $BackupApp -Destination $AppDir
     }
     catch {
-        Write-Log 'Restore failed after current app backup; restoring the app payload that was just moved aside.'
+        if ($hasCurrentApp) {
+            Write-UpdaterLog 'Restore failed after current app backup; restoring the app payload that was just moved aside.'
+        }
+        else {
+            Write-UpdaterLog "Restore failed. There was no current app to roll back to. Check the selected backup: $BackupApp"
+        }
         if (Test-Path -LiteralPath $AppDir) {
             Rename-Item -LiteralPath $AppDir -NewName ("failed-restore-app-$timestamp")
         }
-        Move-Item -LiteralPath $currentBackup -Destination $AppDir
+        if ($hasCurrentApp) {
+            Move-Item -LiteralPath $currentBackup -Destination $AppDir
+        }
         throw
     }
 
     $restored = Get-InstalledBraveVersion
-    Write-Log "Restore complete. Installed brave.exe version: $($restored.Raw) (Brave $($restored.Normalized))"
-    Write-Log "Previous app payload backup: $currentBackup"
-    Write-Log "Profile data was not modified by this updater: $DataDir"
+    Write-UpdaterLog "Restore complete. Installed brave.exe version: $($restored.Raw) (Brave $($restored.Normalized))"
+    if ($hasCurrentApp) {
+        Write-UpdaterLog "Previous app payload backup: $currentBackup"
+    }
+    Write-UpdaterLog "Profile data was not modified by this updater: $DataDir"
 }
 
 function Start-BravePortable {
@@ -643,21 +698,25 @@ function Start-BravePortable {
     param()
 
     if ($PSCmdlet.ShouldProcess($PortableExe, 'Launch Brave Portable')) {
-        Write-Log 'Launching brave-portable.exe...'
+        Write-UpdaterLog 'Launching brave-portable.exe...'
         Start-Process -FilePath $PortableExe -WorkingDirectory $PortableDir
     }
 }
 
+$updateLock = $null
 try {
-    Assert-PortappsBraveRoot
+    Assert-PortappsBraveRoot -AllowMissingApp:$RestoreLatestBackup
+    if (-not $DryRun) {
+        $updateLock = Open-UpdaterLock
+    }
     Wait-ForPortableBraveExit -Wait:$WaitForExit
 
     $installed = Get-InstalledBraveVersion
     if ($installed.Raw) {
-        Write-Log "Current installed brave.exe version: $($installed.Raw) (Brave $($installed.Normalized))"
+        Write-UpdaterLog "Current installed brave.exe version: $($installed.Raw) (Brave $($installed.Normalized))"
     }
     else {
-        Write-Log 'Current installed brave.exe version: not found'
+        Write-UpdaterLog 'Current installed brave.exe version: not found'
     }
 
     if ($RestoreLatestBackup) {
@@ -670,11 +729,18 @@ try {
     }
 
     $release = Resolve-BraveRelease $Edition
-    Write-Log "Latest public $($release.Channel) Windows x64 version: Brave $($release.Version) ($($release.Tag), published $($release.Published))"
+    Write-UpdaterLog "Latest public $($release.Channel) Windows x64 version: Brave $($release.Version) ($($release.Tag), published $($release.Published))"
+
+    if ($installed.Normalized -and [version]$installed.Normalized -gt [version]$release.Version) {
+        if (-not $AllowDowngrade) {
+            throw "Installed Brave $($installed.Normalized) is newer than the selected $($release.Channel) release $($release.Version). Downgrade stopped. Keep the newer version, or use -AllowDowngrade only if you intentionally want an older browser and have a separate profile backup. -Force does not allow downgrades."
+        }
+        Write-UpdaterLog "Warning: -AllowDowngrade permits replacing Brave $($installed.Normalized) with older Brave $($release.Version)."
+    }
 
     if ($installed.Normalized -eq $release.Version -and -not $Force) {
-        Write-Log 'Already up to date. Use -Force to reinstall the current version.'
-        if ($Launch) {
+        Write-UpdaterLog 'Already up to date. Use -Force to reinstall the current version.'
+        if ($Launch -and -not $DryRun) {
             Start-BravePortable
         }
         exit 0
@@ -685,19 +751,19 @@ try {
             -NoLogItems 'app payload, profile files' `
             -LoggedItems 'app payload or profile files'
         if ($release.Sha256Url) {
-            Write-Log "Would download: $($release.AssetUrl)"
-            Write-Log "Would verify SHA256: $($release.Sha256Url)"
+            Write-UpdaterLog "Would download: $($release.AssetUrl)"
+            Write-UpdaterLog "Would verify SHA256: $($release.Sha256Url)"
         }
         elseif ($AllowMissingHash) {
-            Write-Log "Would download: $($release.AssetUrl)"
-            Write-Log 'Would continue without Brave SHA256 because -AllowMissingHash was set; staged brave.exe version verification would still run.'
+            Write-UpdaterLog "Would download: $($release.AssetUrl)"
+            Write-UpdaterLog 'Would continue without Brave SHA256 because -AllowMissingHash was set; staged brave.exe version verification would still run.'
         }
         else {
-            Write-Log 'Would stop before download because Brave did not publish a SHA256 file for this asset. Use -AllowMissingHash only if you accept that risk.'
+            Write-UpdaterLog 'Would stop before download because Brave did not publish a SHA256 file for this asset. Use -AllowMissingHash only if you accept that risk.'
         }
-        Write-Log "Would replace only: $AppDir"
-        Write-Log "Would check free space before installing into: $PortableDir"
-        Write-Log "Would leave profile data untouched: $DataDir"
+        Write-UpdaterLog "Would replace only: $AppDir"
+        Write-UpdaterLog "Would check free space before installing into: $PortableDir"
+        Write-UpdaterLog "Would leave profile data untouched: $DataDir"
         exit 0
     }
 
@@ -712,9 +778,9 @@ try {
         $backupApp = Install-AppPayload -NewAppDir $newAppDir -CurrentVersion $installed.Normalized -TargetVersion $release.Version
 
         $updated = Get-InstalledBraveVersion
-        Write-Log "Update complete. Installed brave.exe version: $($updated.Raw) (Brave $($updated.Normalized))"
-        Write-Log "Old app payload backup: $backupApp"
-        Write-Log "Profile data was not modified by this updater: $DataDir"
+        Write-UpdaterLog "Update complete. Installed brave.exe version: $($updated.Raw) (Brave $($updated.Normalized))"
+        Write-UpdaterLog "Old app payload backup: $backupApp"
+        Write-UpdaterLog "Profile data was not modified by this updater: $DataDir"
 
         if ($Launch) {
             Start-BravePortable
@@ -741,4 +807,9 @@ catch {
         Write-Verbose "Failed to append error to log: $($_.Exception.Message)"
     }
     exit 1
+}
+finally {
+    if ($null -ne $updateLock) {
+        $updateLock.Dispose()
+    }
 }

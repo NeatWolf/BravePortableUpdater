@@ -20,15 +20,7 @@ for %%A in (%*) do (
 set "BRAVE_PORTABLE_DIR=%~dp0"
 if "%BRAVE_PORTABLE_DIR:~-1%"=="\" set "BRAVE_PORTABLE_DIR=%BRAVE_PORTABLE_DIR:~0,-1%"
 set "BRAVE_PORTABLE_LOG=%BRAVE_PORTABLE_DIR%\brave-portable-update.log"
-if "%SHOW_FULL_HELP%"=="1" (
-    powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "Get-Help -Full -Name '%~dp0Update-BravePortable.ps1'"
-    set "EXIT_CODE=%ERRORLEVEL%"
-    if "%PAUSE_AFTER%"=="1" (
-        echo.
-        pause
-    )
-    exit /b %EXIT_CODE%
-)
+if "%SHOW_FULL_HELP%"=="1" goto full_help
 if "%SHOW_HELP%"=="1" (
     echo Brave Portable Updater
     echo.
@@ -86,6 +78,16 @@ if "%NO_LOG%"=="1" (
 ) else (
     echo Log: "%BRAVE_PORTABLE_LOG%"
 )
+if "%PAUSE_AFTER%"=="1" (
+    echo.
+    pause
+)
+exit /b %EXIT_CODE%
+
+:full_help
+set "BRAVE_UPDATER_SCRIPT=%~dp0Update-BravePortable.ps1"
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command "try { Get-Help -Full -Name $env:BRAVE_UPDATER_SCRIPT -ErrorAction Stop; exit 0 } catch { Write-Error $_ -ErrorAction Continue; exit 1 }"
+set "EXIT_CODE=%ERRORLEVEL%"
 if "%PAUSE_AFTER%"=="1" (
     echo.
     pause

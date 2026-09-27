@@ -71,6 +71,16 @@ Current cycle history:
 - 2026-07-08: Operator usability - surfaced downloaded-file warning recovery in beginner help.
 - 2026-07-08: Release packaging - made the README release asset list match the published zip, scripts, and checksum manifest.
 - 2026-07-08: Maintenance evidence - documented post-release remote/tag/asset verification checks.
+- 2026-09-27: Install/update safety - repaired rollback logging, missing-app recovery, process-query failures and pre-swap checks, dry-run launch suppression, and downgrade consent; verified isolated failure cases and live no-log preview.
+
+Independent judgement for this pass (before follow-up corrections): repository
+discoverability 9/10, operator usability 7/10, PowerShell help 8/10, code quality
+7/10, release packaging 8/10, install/update safety 6/10, maintenance evidence
+6/10. No second judgement was requested. Follow-up corrections added an exclusive
+updater lock, repaired full-help quoting/exit status, and retained runnable checks
+in VERIFICATION.md. The review's claimed cross-drive failure was rejected based
+on a successful Windows PowerShell 5.1 C:-to-D: fixture move. Scores are not
+retroactively raised; the two-consecutive-perfect-reviews goal remains unmet.
 
 ## Working Rules
 

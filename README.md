@@ -69,6 +69,9 @@ Update-BravePortable.cmd
 ```
 
 The default channel is stable.
+If the selected release is older than your installed version, the updater stops.
+`-Force` does not bypass this protection. Use `-AllowDowngrade` only for an
+intentional downgrade after making a separate profile backup.
 Double-clicking `Update-BravePortable.cmd` from Explorer is supported. If the
 update finishes or does not complete, the window stays open so the result can
 be read. If Brave is open, close it and run the updater again.
@@ -100,6 +103,8 @@ that does not append the log, use:
 ```bat
 Update-BravePortable.cmd -DryRun -Force -NoLog
 ```
+
+`-DryRun` also suppresses `-Launch`, including when Brave is already current.
 
 Update stable and launch Brave afterward:
 
@@ -166,6 +171,13 @@ The updater refuses to proceed unless the target folder looks like a Portapps
 Brave Portable root with `brave-portable.exe` and `app/`.
 
 It also refuses to update while Brave from that portable directory is running.
+The check runs again immediately before app replacement. If Windows cannot
+provide process information, the updater stops. Keep Brave closed throughout
+the update; the check cannot prevent you from opening it afterward.
+Only one non-preview updater may run per portable folder. An exclusive handle
+on `.brave-portable-update.lock` prevents overlapping updates and restores.
+Windows releases the handle when the updater exits, including after a crash;
+the small lock file remains and does not need deleting. Dry runs do not create it.
 Close Brave first, or use:
 
 ```bat
@@ -186,6 +198,8 @@ brave-portable-update.log
 ```
 
 Use `-NoLog` only when you want console output without appending that log.
+If writing the log fails, a console warning explains the problem. Installation
+and recovery can continue; the log may be incomplete, so read the console result.
 
 The `.cmd` launcher prints the full log path before it pauses, so Explorer
 launches still leave both an on-screen result and a persistent log.
@@ -262,6 +276,9 @@ Update-BravePortable.cmd -RestoreLatestBackup
 The restore uses the same running-process safety check as updates. It moves the
 current `app/` folder into `update-backups/`, restores the newest saved app
 payload into `app/`, and leaves `data/` untouched.
+Restore also works when an interrupted update left `app/` missing. In that case
+it recovers the selected backup directly, without trying to back up a missing
+folder. App restore does not undo profile changes made by a newer browser.
 
 ## Credits
 

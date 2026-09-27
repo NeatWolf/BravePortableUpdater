@@ -2,6 +2,20 @@
 
 All notable user-facing changes for this repository are recorded here.
 
+## Unreleased
+
+- Made log writes best-effort so logging failures cannot prevent rollback.
+- Allowed backup restore when an interrupted update left `app/` missing.
+- Stopped on failed or inconclusive process queries and rechecked processes
+  immediately before installation and restore.
+- Prevented `-DryRun -Launch` from launching an already-current browser.
+- Required `-AllowDowngrade` before installing an older release, even with `-Force`.
+- Renamed the logging helper to avoid a PSScriptAnalyzer command-name warning.
+- Serialized updates and restores using an exclusive per-folder file handle.
+- Fixed full help for apostrophes in paths and propagated help failures correctly.
+- Retained fourteen runnable regression checks in `VERIFICATION.md` without
+  adding executable scripts.
+
 ## v0.1.32 - 2026-07-08
 
 Maintenance-evidence release.
