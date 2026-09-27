@@ -2,7 +2,11 @@
 
 All notable user-facing changes for this repository are recorded here.
 
-## Unreleased
+## v0.1.33 - 2026-09-27
+
+- Reworked the README around NeatWolf attribution, one primary download,
+  first-run results, troubleshooting, and recovery; collapsed advanced details.
+- Published the accumulated safety and startup fixes in the downloadable bundle.
 
 - Load and check standard PowerShell modules at startup so ordinary launches do
   not depend on a manual module-import workaround. Explain missing prerequisites
@@ -19,7 +23,7 @@ All notable user-facing changes for this repository are recorded here.
 - Renamed the logging helper to avoid a PSScriptAnalyzer command-name warning.
 - Serialized updates and restores using an exclusive per-folder file handle.
 - Fixed full help for apostrophes in paths and propagated help failures correctly.
-- Retained fourteen runnable regression checks in `VERIFICATION.md` without
+- Retained sixteen runnable regression checks in `VERIFICATION.md` without
   adding executable scripts.
 
 ## v0.1.32 - 2026-07-08

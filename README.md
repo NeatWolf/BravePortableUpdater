@@ -1,58 +1,29 @@
 # Brave Portable Updater
+**By [NeatWolf](https://github.com/NeatWolf)**
 
-![Windows](https://img.shields.io/badge/platform-Windows-0078D4?logo=windows&logoColor=white)
-![PowerShell](https://img.shields.io/badge/PowerShell-5.1%2B-5391FE?logo=powershell&logoColor=white)
-![Brave](https://img.shields.io/badge/Brave-release%20zip-FB542B?logo=brave&logoColor=white)
-![No admin](https://img.shields.io/badge/admin-not%20required-2EA043)
-![No AI training](https://img.shields.io/badge/AI%20training-not%20licensed-B00020)
-![License](https://img.shields.io/badge/license-attribution%20%2B%20no%20AI%20training-6F42C1)
+Keep portable Brave current. Keep your browser data in place.
 
-A small, cautious Windows updater for a Portapps-style Brave Portable folder.
+[![Release](https://img.shields.io/github/v/release/NeatWolf/BravePortableUpdater?label=download&color=238636)](https://github.com/NeatWolf/BravePortableUpdater/releases/latest)
+![Windows x64](https://img.shields.io/badge/Windows-x64-0078D4)
+![No admin required](https://img.shields.io/badge/admin-not_required-555555)
 
-It updates only the Brave application payload in `app/`. It does not touch the
-portable profile in `data/`, where bookmarks, extensions, cookies, sessions,
-settings, and other user state live.
+A small updater for an existing **Portapps Brave Portable** installation.
+It downloads Brave's official browser files, verifies them, and keeps a backup
+of the previous application. Your bookmarks, extensions, settings, and sessions
+stay in the portable `data/` folder, which this updater does not modify.
 
-## Why
+**[Download BravePortableUpdater.zip](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/BravePortableUpdater.zip)**
 
-Portapps Brave Portable keeps profile data portable, but the bundled Brave
-browser can lag behind current security releases. This updater keeps the
-portable wrapper and profile in place while refreshing the browser payload from
-Brave's own GitHub release zips.
+[Release notes](https://github.com/NeatWolf/BravePortableUpdater/releases/latest) · [Report a problem](https://github.com/NeatWolf/BravePortableUpdater/issues/new/choose)
 
-## Quick Start
+## Get Started
 
-For most users:
+1. Download the zip above and choose **Extract All** in Windows.
+2. Put the extracted files beside `brave-portable.exe`.
+3. Close Brave Portable. Keep it closed while the updater runs.
+4. Double-click **`Update-BravePortable.cmd`**.
 
-1. Download the latest
-   [`BravePortableUpdater.zip`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/BravePortableUpdater.zip),
-   then open the zip.
-2. Put the zip contents in the same folder as `brave-portable.exe`.
-3. Close Brave Portable if it is open.
-4. Double-click `Update-BravePortable.cmd`.
-
-Do not put the updater files inside `app\` or `data\`. They belong next to
-`brave-portable.exe`.
-
-After the run, the window stays open and says whether Brave was updated,
-restored, already current, or stopped for a reason that needs attention.
-
-If Windows warns that the files came from the internet, confirm you downloaded
-them from this repository's GitHub release. If each updater file's Properties
-window shows an `Unblock` checkbox, select it and run the updater again.
-
-Manual path: download exactly these two updater files:
-
-- [`Update-BravePortable.cmd`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.cmd)
-- [`Update-BravePortable.ps1`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.ps1)
-
-They come from the latest GitHub release. The zip and release also include
-[`SHA256SUMS.txt`](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/SHA256SUMS.txt)
-so users who know how to verify downloads can check that the two updater files
-arrived unchanged.
-
-Put both files in the same folder as `brave-portable.exe`. A typical folder
-looks like this before you run the updater:
+Your folder should look like this:
 
 ```text
 brave-portable.exe
@@ -60,260 +31,168 @@ app\
 data\
 Update-BravePortable.cmd
 Update-BravePortable.ps1
+SHA256SUMS.txt
 ```
 
-Then double-click `Update-BravePortable.cmd`, or run:
+The updater files belong in this folder, not inside `app/` or `data/`.
+The checksum file is included for optional download verification.
 
-```bat
-Update-BravePortable.cmd
+**Requirements:** Windows x64, Windows PowerShell 5.1 or later, internet access,
+and an existing [Portapps Brave Portable](https://portapps.io/app/brave-portable/)
+folder. The Windows-provided PowerShell is sufficient; no separate installation
+or administrator prompt is normally needed. This is not an installer for
+ordinary, system-wide Brave.
+
+Already using this updater? Close its window, then replace the two updater
+files with the new download. Leave your browser folders alone.
+
+## Know When It Is Done
+
+The window stays open until you press a key. Read the status before closing it.
+
+| Status | What it means |
+| --- | --- |
+| **Update complete** | The new browser files are installed. Open Brave normally. |
+| **Already up to date** | Nothing needed replacing. |
+| **Dry run only** | This was a preview; no browser files were replaced. |
+| **ERROR / action did not complete** | Read the reason and next step above the final message. |
+
+For example, a successful run includes these lines (versions will vary):
+
+```text
+Verified downloaded zip SHA256.
+Verified staged brave.exe version 154.1.96.59.
+Update complete. Installed brave.exe version: 154.1.96.59 (Brave 1.96.59)
 ```
 
-The default channel is stable.
-If the selected release is older than your installed version, the updater stops.
-`-Force` does not bypass this protection. Use `-AllowDowngrade` only for an
-intentional downgrade after making a separate profile backup.
-Double-clicking `Update-BravePortable.cmd` from Explorer is supported. If the
-update finishes or does not complete, the window stays open so the result can
-be read. If Brave is open, close it and run the updater again.
+The window also shows the previous application's backup location and the log
+path: **`brave-portable-update.log`**, beside the updater.
 
-## Examples
+## If Something Stops
 
-Show built-in help:
+| What you see | What to do |
+| --- | --- |
+| Brave is still running | Close every Brave Portable window, wait a few seconds, then run the updater again. |
+| Another updater may be running | Close the other updater window and retry. If none is open, check that you can write to the portable folder. |
+| Windows warns about downloaded files | Check that they came from this repository's release. If **Properties > Unblock** is available, select it. Do not disable Windows security features. |
+| Cannot download or check the release | Check your connection and retry later. A newly announced release may still be publishing. |
+| Not enough free space | Free space on the affected drive and retry. Keep your app backups until you know the new version works. |
+| Cannot load built-in PowerShell tools | Restart Windows and retry. If it persists, report the message and log. |
+| Installed version is newer | Keep the newer browser unless you deliberately intend to downgrade. |
+| Cannot append to the log | Read the console result; the log may be incomplete. Check folder permissions and free space. |
 
-```bat
-Update-BravePortable.cmd -Help
-```
+For help, [open an issue](https://github.com/NeatWolf/BravePortableUpdater/issues/new/choose)
+with the command and relevant error text. Remove personal information from log
+excerpts. Never upload `data/`, cookies, credentials, or your browser profile.
+Use [private reporting](SECURITY.md) for security-sensitive problems.
 
-Show the full PowerShell help:
+## Restore a Previous Version
 
-```bat
-Update-BravePortable.cmd -FullHelp
-```
-
-Preview without changing files:
-
-```bat
-Update-BravePortable.cmd -DryRun
-```
-
-Dry runs still append status lines to `brave-portable-update.log`, but they do
-not download, replace `app/`, or modify `data/`. For screen-only verification
-that does not append the log, use:
-
-```bat
-Update-BravePortable.cmd -DryRun -Force -NoLog
-```
-
-`-DryRun` also suppresses `-Launch`, including when Brave is already current.
-
-Update stable and launch Brave afterward:
-
-```bat
-Update-BravePortable.cmd -Launch
-```
-
-Use another channel:
-
-```bat
-Update-BravePortable.cmd -Edition beta
-Update-BravePortable.cmd -Edition nightly
-```
-
-Force reinstall of the current resolved version:
-
-```bat
-Update-BravePortable.cmd -Force
-```
-
-Preview restoring the newest app backup:
+Close Brave first. In File Explorer, open the portable folder, type `cmd` in its
+address bar, and press Enter. Preview which backup will be restored:
 
 ```bat
 Update-BravePortable.cmd -RestoreLatestBackup -DryRun -NoLog
 ```
 
-Run without the final pause, for scheduled tasks or automation:
-
-```bat
-Update-BravePortable.cmd -NoPause
-```
-
-Run from another folder:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Update-BravePortable.ps1 -PortableDir D:\Portable\brave-portable
-```
-
-## What It Changes
-
-- Downloads the selected public Brave Windows x64 release zip.
-- Requires and verifies Brave's `.sha256` file for that asset by default.
-- Extracts into a temporary staging folder first.
-- Verifies the staged `brave.exe` version.
-- Checks available space on the portable drive before the live `app/` swap.
-- Moves the current `app/` folder into `update-backups/`.
-- Installs the new Brave payload into `app/`.
-- When `-RestoreLatestBackup` is used, moves the current `app/` folder into
-  `update-backups/` and restores the newest saved app payload into `app/`.
-
-## What It Does Not Change
-
-- Does not modify `data/`.
-- Does not install Brave system-wide.
-- Does not require administrator rights.
-- Does not run Brave's installer.
-- Does not include or redistribute Brave binaries.
-- Does not include or redistribute Portapps binaries.
-- Does not inspect or require `data/`.
-
-## Safety Checks
-
-The updater refuses to proceed unless the target folder looks like a Portapps
-Brave Portable root with `brave-portable.exe` and `app/`.
-
-It also refuses to update while Brave from that portable directory is running.
-The check runs again immediately before app replacement. If Windows cannot
-provide process information, the updater stops. Keep Brave closed throughout
-the update; the check cannot prevent you from opening it afterward.
-Only one non-preview updater may run per portable folder. An exclusive handle
-on `.brave-portable-update.lock` prevents overlapping updates and restores.
-Windows releases the handle when the updater exits, including after a crash;
-the small lock file remains and does not need deleting. Dry runs do not create it.
-Close Brave first, or use:
-
-```bat
-Update-BravePortable.cmd -WaitForExit
-```
-
-If Brave does not publish a `.sha256` file for the selected zip, the updater
-stops before downloading or installing anything. `-AllowMissingHash` exists only
-for users who knowingly accept version-check-only verification for that release.
-
-Before replacing `app/`, the updater checks that the portable drive has enough
-free space for the staged app payload plus a small safety margin.
-
-Logs are appended to:
-
-```text
-brave-portable-update.log
-```
-
-Use `-NoLog` only when you want console output without appending that log.
-If writing the log fails, a console warning explains the problem. Installation
-and recovery can continue; the log may be incomplete, so read the console result.
-
-The `.cmd` launcher prints the full log path before it pauses, so Explorer
-launches still leave both an on-screen result and a persistent log.
-
-Previous app payloads are stored in:
-
-```text
-update-backups/
-```
-
-## Releases
-
-Releases are tagged from `main` and use [CHANGELOG.md](CHANGELOG.md) as the
-source of release notes. Each release publishes exactly these downloadable
-project assets:
-
-- `BravePortableUpdater.zip`
-- `Update-BravePortable.cmd`
-- `Update-BravePortable.ps1`
-- `SHA256SUMS.txt`
-
-`BravePortableUpdater.zip` is the beginner-friendly bundle. It contains only
-the two updater files plus `SHA256SUMS.txt`. This repository does not publish
-Brave or Portapps binaries.
-
-## Maintainer Verification
-
-See [VERIFICATION.md](VERIFICATION.md) for the full checklist, expected output,
-and release asset boundaries. Before tagging a release, run the same core
-checks from a clean working tree:
-
-```powershell
-git status --short --branch
-git ls-files -- '*.cmd' '*.ps1'
-Get-FileHash -Algorithm SHA256 -LiteralPath .\Update-BravePortable.cmd, .\Update-BravePortable.ps1
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command '$path=(Resolve-Path -LiteralPath .\Update-BravePortable.ps1).Path; $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; if ($errors.Count) { $errors | ForEach-Object Message; exit 1 }; Write-Output ''PowerShell parse OK'''
-cmd /c "D:\Portable\brave-portable\Update-BravePortable.cmd -NoPause -DryRun -Force -NoLog"
-```
-
-The dry run must report what would happen without changing the app payload or
-profile files. Use `-Force` with `-DryRun` on an already-current install to
-exercise the dry-run action lines without downloading or replacing `app/`. Add
-`-NoLog` when the check must also avoid appending `brave-portable-update.log`.
-Run the PSScriptAnalyzer command in [VERIFICATION.md](VERIFICATION.md) as part
-of the full checklist; it works even when the analyzer is not already installed.
-If the live portable copy of Brave is running, process detection is a valid
-safety result: close Brave or rerun with `-WaitForExit` only when an actual
-update is intended.
-The only executable release assets are `Update-BravePortable.cmd` and
-`Update-BravePortable.ps1`. `BravePortableUpdater.zip` is a convenience bundle
-containing those two scripts plus `SHA256SUMS.txt`, and `SHA256SUMS.txt` is a
-non-executable checksum manifest for the scripts.
-
-## Contributing And Security
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for scope, safety rules, and verification
-expectations. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for participation
-rules. Report security-sensitive issues using [SECURITY.md](SECURITY.md).
-
-## Recovery
-
-If a new Brave payload misbehaves, close Brave and preview the restore first:
-
-```bat
-Update-BravePortable.cmd -RestoreLatestBackup -DryRun -NoLog
-```
-
-If the preview selects the backup you want, run:
+If the displayed backup is the one you want, run:
 
 ```bat
 Update-BravePortable.cmd -RestoreLatestBackup
 ```
 
-The restore uses the same running-process safety check as updates. It moves the
-current `app/` folder into `update-backups/`, restores the newest saved app
-payload into `app/`, and leaves `data/` untouched.
-Restore also works when an interrupted update left `app/` missing. In that case
-it recovers the selected backup directly, without trying to back up a missing
-folder. App restore does not undo profile changes made by a newer browser.
+The updater preserves the current application before restoring the newest saved
+backup. It can also recover a missing `app/` folder after an interrupted update.
 
-## Credits
+**An app backup is not a profile backup.** Restoring an older browser does not
+undo profile changes made by a newer one. Keep separate backups of important
+browser data.
 
-This project exists because of the portable-update flow described in:
+## What Protects Your Installation
 
-- https://www.reddit.com/r/brave_browser/comments/1pxz62w/brave_portable_with_updates_solution_for_windows/
+- Downloads come from Brave's official releases and require a matching SHA256
+  checksum by default.
+- Files are extracted and their browser version checked before replacing `app/`.
+- The previous application is kept in `update-backups/`.
+- Running-browser checks and an updater lock prevent known conflicts.
+- Downgrades require explicit consent. A failed process check stops the update.
 
-That thread points to Chaython's Brave Portable updater:
+Keep Brave closed throughout the operation. These checks do not prevent someone
+opening it immediately afterward or make an interrupted update crash-proof.
+The updater changes browser application files; it does not install Brave
+system-wide or update the Portapps launcher.
 
-- https://github.com/Chaython/Brave-Portable-Updater
+<details>
+<summary><strong>Advanced Commands</strong></summary>
 
-This repository's scripts were written independently for this workflow and do
-not copy third-party updater code. Chaython's repository did not expose a
-GitHub-detected license when checked, so it is treated here as prior art.
+Run these from a command prompt in the portable folder.
 
-Brave Browser is developed by Brave Software:
+| Task | Command |
+| --- | --- |
+| Short help | `Update-BravePortable.cmd -Help` |
+| Full parameter help | `Update-BravePortable.cmd -FullHelp` |
+| Preview, including an already-current version, without writing the log | `Update-BravePortable.cmd -DryRun -Force -NoLog` |
+| Update and open Brave afterward | `Update-BravePortable.cmd -Launch` |
+| Wait for Brave to close | `Update-BravePortable.cmd -WaitForExit` |
+| Use beta or nightly | `Update-BravePortable.cmd -Edition beta` (or `nightly`) |
+| Reinstall the selected version | `Update-BravePortable.cmd -Force` |
+| Omit the final pause for automation | `Update-BravePortable.cmd -NoPause` |
 
-- https://github.com/brave/brave-browser
-- https://versions.brave.com/
+Stable is the default channel. `-DryRun` never launches Brave; without `-NoLog`,
+it still appends status to the log.
 
-Portapps Brave Portable is developed by Portapps:
+`-Force` does not permit a downgrade. `-AllowDowngrade` is a separate, deliberate
+override; make a profile backup first. `-AllowMissingHash` permits a release
+without a published checksum and weakens download verification.
 
-- https://portapps.io/app/brave-portable/
-- https://github.com/portapps/brave-portable
+To target another folder, use the PowerShell script directly with `-PortableDir`.
+See `-FullHelp` for an example.
 
-This project is not affiliated with, endorsed by, or sponsored by Brave
-Software, Portapps, Reddit, or Chaython.
+The small `.brave-portable-update.lock` file may remain after a run. The open
+file handle, not the file's presence, holds the lock; it releases when the
+updater exits. You do not need to delete it.
 
-## License
+</details>
 
-This repository uses a custom attribution license. You may use, copy, modify,
-and redistribute the original scripts with visible credit to this repository.
+<details>
+<summary><strong>Individual Downloads and Verification</strong></summary>
 
-AI training is not licensed. Any unauthorized use for AI training is subject to
-the model-rights grant described in [LICENSE](LICENSE).
+The convenience zip contains only the two updater scripts and their checksum
+manifest. No Brave or Portapps binaries are bundled.
 
-Because the license restricts AI training, it is not an OSI-style open-source
-license.
+- [Update-BravePortable.cmd](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.cmd)
+- [Update-BravePortable.ps1](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/Update-BravePortable.ps1)
+- [SHA256SUMS.txt](https://github.com/NeatWolf/BravePortableUpdater/releases/latest/download/SHA256SUMS.txt)
+
+To check your downloads, compare the output of this PowerShell command with
+the corresponding entries in `SHA256SUMS.txt`:
+
+```powershell
+Get-FileHash -Algorithm SHA256 -LiteralPath .\Update-BravePortable.cmd, .\Update-BravePortable.ps1
+```
+
+These hashes check the updater downloads. The updater separately verifies the
+Brave archive during an update.
+
+</details>
+
+## Credits and License
+
+Inspired by the [portable-update discussion on Reddit](https://www.reddit.com/r/brave_browser/comments/1pxz62w/brave_portable_with_updates_solution_for_windows/)
+and [Chaython's Brave Portable updater](https://github.com/Chaython/Brave-Portable-Updater).
+These scripts were written independently; see [NOTICE.md](NOTICE.md) for attribution.
+
+[Brave](https://github.com/brave/brave-browser) is developed by Brave Software;
+[Brave Portable](https://github.com/portapps/brave-portable) is maintained by Portapps.
+This project is independent and is not endorsed by either.
+
+Use, modification, and redistribution are permitted under the
+[custom attribution license](LICENSE). **AI training is not licensed.**
+The full terms, including the model-rights clause, are in that license.
+It is not an OSI-approved open-source license.
+
+---
+
+[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) ·
+[Verification and regression checks](VERIFICATION.md) ·
+[Security](SECURITY.md) · [Code of conduct](CODE_OF_CONDUCT.md)
